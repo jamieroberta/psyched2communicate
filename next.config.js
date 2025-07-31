@@ -11,6 +11,10 @@ const nextConfig = {
   images: {
     domains: ['cdn.sanity.io'],
   },
+  transpilePackages: ['framer-motion'],
+  experimental: {
+    esmExternals: 'loose',
+  },
 }
 
 module.exports = nextConfig
