@@ -23,6 +23,12 @@ export default defineConfig({
               .title('Consultants')
               .child(S.documentTypeList('consultant').title('Consultants')),
             S.listItem()
+              .title('Events')
+              .child(S.documentTypeList('event').title('Events')),
+            S.listItem()
+              .title('Announcements')
+              .child(S.documentTypeList('announcement').title('Announcements')),
+            S.listItem()
               .title('Posts')
               .child(S.documentTypeList('post').title('Posts')),
             S.listItem()

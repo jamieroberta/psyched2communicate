@@ -60,3 +60,35 @@ export interface Page {
   content?: string
   showOnNavigation: boolean
 }
+
+export interface Event {
+  _id: string
+  title: string
+  slug: { current: string }
+  description?: string
+  startDate: string
+  endDate?: string
+  location?: string
+  isVirtual: boolean
+  meetingLink?: string
+  region: Region
+  category: 'training' | 'workshop' | 'meeting' | 'conference' | 'social' | 'other'
+  registrationRequired: boolean
+  registrationLink?: string
+  image?: any
+}
+
+export interface Announcement {
+  _id: string
+  title: string
+  slug: { current: string }
+  content: any[]
+  excerpt?: string
+  publishedAt: string
+  expiresAt?: string
+  region: Region
+  priority: 'low' | 'normal' | 'high' | 'urgent'
+  category: 'general' | 'policy' | 'training' | 'event' | 'system' | 'emergency'
+  isPinned: boolean
+  image?: any
+}
