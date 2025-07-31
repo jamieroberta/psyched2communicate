@@ -2,18 +2,19 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { sanityClient } from '@/lib/sanity'
-import type { Region, Page } from '@/lib/sanity'
+import { sanityClient, urlFor } from '@/lib/sanity'
+import type { Region, Page, SiteSettings } from '@/lib/sanity'
 
 export default function Header() {
   const [regions, setRegions] = useState<Region[]>([])
   const [pages, setPages] = useState<Page[]>([])
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
     const fetchNavData = async () => {
       try {
-        const [regionsData, pagesData] = await Promise.all([
+        const [regionsData, pagesData, siteSettingsData] = await Promise.all([
           sanityClient.fetch(`*[_type == "region"] | order(name asc) {
             _id,
             name,
@@ -23,10 +24,15 @@ export default function Header() {
             _id,
             title,
             slug
+          }`),
+          sanityClient.fetch(`*[_type == "siteSettings"][0] {
+            _id,
+            siteLogo
           }`)
         ])
         setRegions(regionsData)
         setPages(pagesData)
+        setSiteSettings(siteSettingsData)
       } catch (error) {
         console.error('Error fetching navigation data:', error)
       }
@@ -38,15 +44,25 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <nav className="container">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center min-h-16 py-2">
           <Link 
             href="/" 
             className="flex items-center space-x-2 text-xl font-bold text-primary-700 hover:text-primary-800 transition-colors"
           >
-            <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              SLPC
-            </div>
-            <span className="hidden sm:block">Ohio Consultants</span>
+            {siteSettings?.siteLogo ? (
+              <img 
+                src={urlFor(siteSettings.siteLogo).height(40).fit('max').url()} 
+                alt="Site Logo" 
+                className="h-10 w-auto max-w-[200px]"
+              />
+            ) : (
+              <>
+                <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  SLPC
+                </div>
+                <span className="hidden sm:block">Ohio Consultants</span>
+              </>
+            )}
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">

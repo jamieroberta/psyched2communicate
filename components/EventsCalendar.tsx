@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Event, Region, sanityClient } from '@/lib/sanity'
 import EventCard from './EventCard'
+import MonthlyCalendar from './MonthlyCalendar'
+import EventModal from './EventModal'
 
 interface EventsCalendarProps {
   regionSlug?: string // If provided, only show events for this region
@@ -16,7 +18,20 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
   const [selectedRegion, setSelectedRegion] = useState<string>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [viewType, setViewType] = useState<'upcoming' | 'all' | 'past'>('upcoming')
+  const [displayMode, setDisplayMode] = useState<'calendar' | 'list'>('calendar')
   const [loading, setLoading] = useState(true)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedEvent(null)
+  }
 
   // Fetch events and regions
   useEffect(() => {
@@ -46,7 +61,8 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
           region->{
             _id,
             name,
-            slug
+            slug,
+            color
           }
         }`
 
@@ -59,7 +75,8 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
           const regionsQuery = `*[_type == "region"] | order(name asc) {
             _id,
             name,
-            slug
+            slug,
+            color
           }`
           const regionsData = await sanityClient.fetch(regionsQuery)
           setRegions(regionsData || [])
@@ -85,7 +102,11 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
     
     // Filter by region (if not region-specific page)
     if (!regionSlug && selectedRegion !== 'all') {
-      if (event.region.slug.current !== selectedRegion) return false
+      if (selectedRegion === 'no-region') {
+        if (event.region) return false
+      } else {
+        if (!event.region || event.region.slug.current !== selectedRegion) return false
+      }
     }
     
     // Filter by category
@@ -116,11 +137,36 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
         <h2 className="text-3xl font-bold text-gray-900">
           {regionSlug ? 'Region Events' : 'Events Calendar'}
         </h2>
-        {!regionSlug && (
-          <div className="text-sm text-gray-600">
-            {filteredEvents.length} {filteredEvents.length === 1 ? 'event' : 'events'}
+        <div className="flex items-center gap-4">
+          {/* Display Mode Toggle */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setDisplayMode('calendar')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                displayMode === 'calendar'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Calendar
+            </button>
+            <button
+              onClick={() => setDisplayMode('list')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                displayMode === 'list'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              List
+            </button>
           </div>
-        )}
+          {!regionSlug && (
+            <div className="text-sm text-gray-600">
+              {filteredEvents.length} {filteredEvents.length === 1 ? 'event' : 'events'}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
@@ -150,6 +196,7 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Regions</option>
+                <option value="no-region">No Region</option>
                 {regions.map(region => (
                   <option key={region._id} value={region.slug.current}>
                     {region.name}
@@ -179,13 +226,21 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
         </div>
       )}
 
-      {/* Events Grid */}
+      {/* Events Display */}
       {filteredEvents.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredEvents.map(event => (
-            <EventCard key={event._id} event={event} />
-          ))}
-        </div>
+        displayMode === 'calendar' ? (
+          <MonthlyCalendar events={filteredEvents} />
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredEvents.map(event => (
+              <EventCard 
+                key={event._id} 
+                event={event} 
+                onClick={() => handleEventClick(event)}
+              />
+            ))}
+          </div>
+        )
       ) : (
         <div className="text-center py-12">
           <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -197,6 +252,13 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
           </p>
         </div>
       )}
+
+      {/* Event Modal */}
+      <EventModal 
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   )
 }

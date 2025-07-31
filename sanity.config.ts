@@ -3,12 +3,15 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './sanity/schema'
 
+const projectId = 'h3prmcr9'
+const dataset = 'production'
+
 export default defineConfig({
   name: 'slpc-consultants',
   title: 'SLPC Consultants CMS',
   
-  projectId: 'h3prmcr9',
-  dataset: 'production',
+  projectId,
+  dataset,
   
   plugins: [
     structureTool({
@@ -16,6 +19,13 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
+            S.listItem()
+              .title('Site Settings')
+              .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+            S.divider(),
+            S.listItem()
+              .title('Resources')
+              .child(S.documentTypeList('resource').title('Resources')),
             S.listItem()
               .title('Regions')
               .child(S.documentTypeList('region').title('Regions')),

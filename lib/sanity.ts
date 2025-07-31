@@ -25,6 +25,7 @@ export interface Region {
   contactPhone?: string
   officeHoursInfo?: string
   schedulingLink?: string
+  color?: string
 }
 
 export interface Consultant {
@@ -71,7 +72,7 @@ export interface Event {
   location?: string
   isVirtual: boolean
   meetingLink?: string
-  region: Region
+  region?: Region
   category: 'training' | 'workshop' | 'meeting' | 'conference' | 'social' | 'other'
   registrationRequired: boolean
   registrationLink?: string
@@ -91,4 +92,22 @@ export interface Announcement {
   category: 'general' | 'policy' | 'training' | 'event' | 'system' | 'emergency'
   isPinned: boolean
   image?: any
+}
+
+export interface SiteSettings {
+  _id: string
+  siteLogo?: any
+  homepageTitle?: string
+  homepageSubtitle?: string
+}
+
+export interface Resource {
+  _id: string
+  title: string
+  description?: string
+  linkType: 'external' | 'pdf'
+  externalUrl?: string
+  pdfFile?: any
+  displayOrder?: number
+  isActive: boolean
 }

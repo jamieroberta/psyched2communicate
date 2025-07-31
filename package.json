@@ -13,6 +13,7 @@
     "load-env": "source ./load-env.sh"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.7",
     "@portabletext/react": "^3.2.1",
     "@sanity/client": "^6.10.0",
     "@sanity/image-url": "^1.1.0",

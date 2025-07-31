@@ -61,7 +61,7 @@ export default defineType({
       title: 'Region',
       type: 'reference',
       to: [{type: 'region'}],
-      validation: (Rule) => Rule.required(),
+      description: 'Optional - leave empty for events with no specific region',
     }),
     defineField({
       name: 'category',

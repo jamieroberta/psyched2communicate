@@ -1,27 +1,52 @@
 import Link from 'next/link'
 import EventsCalendar from '@/components/EventsCalendar'
 import AnnouncementsSection from '@/components/AnnouncementsSection'
+import ResourcesSection from '@/components/ResourcesSection'
+import { SiteSettings } from '@/lib/sanity'
+import { createClient } from 'next-sanity'
 
-export default function HomePage() {
+// Create a more reliable client for server-side rendering
+const client = createClient({
+  projectId: 'h3prmcr9',
+  dataset: 'production',
+  apiVersion: '2023-12-01',
+  useCdn: false, // Disable CDN for fresh data
+})
+
+async function getSiteSettings(): Promise<SiteSettings | null> {
+  try {
+    const query = `*[_type == "siteSettings"][0] {
+      _id,
+      siteLogo,
+      homepageTitle,
+      homepageSubtitle
+    }`
+    
+    console.log('Fetching site settings...')
+    const siteSettings = await client.fetch(query)
+    console.log('Site settings fetched:', siteSettings)
+    return siteSettings
+  } catch (error) {
+    console.error('Error fetching site settings:', error)
+    return null
+  }
+}
+
+// Force revalidation every time to get fresh data
+export const revalidate = 0
+
+export default async function HomePage() {
+  const siteSettings = await getSiteSettings()
   return (
     <div>
       {/* Hero Section */}
       <div className="container py-16 text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          SLPC & SPC Consultants
+          {siteSettings?.homepageTitle || 'SLPC & SPC Consultants'}
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          Supporting Speech-Language Pathology and School Psychology consultants 
-          across Ohio's Educational Service Centers
+          {siteSettings?.homepageSubtitle || 'Supporting Speech-Language Pathology and School Psychology consultants across Ohio\'s Educational Service Centers'}
         </p>
-        <div className="space-x-4">
-          <Link href="/posts" className="btn-primary">
-            View Posts
-          </Link>
-          <Link href="/posts?type=job" className="btn-secondary">
-            Job Postings
-          </Link>
-        </div>
       </div>
 
       {/* Main Content Area with Sidebar */}
@@ -100,6 +125,11 @@ export default function HomePage() {
           {/* Right Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-8">
+              {/* Resources Sidebar Widget */}
+              <div className="bg-white rounded-lg shadow-md">
+                <ResourcesSection compact={true} />
+              </div>
+
               {/* Announcements Sidebar Widget */}
               <div className="bg-white rounded-lg shadow-md">
                 <AnnouncementsSection 

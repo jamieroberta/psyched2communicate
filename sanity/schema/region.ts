@@ -58,6 +58,14 @@ export default defineType({
       type: 'url',
       description: 'External link for scheduling appointments',
     }),
+    defineField({
+      name: 'color',
+      title: 'Region Color',
+      type: 'string',
+      description: 'Color for region events on calendar (hex code)',
+      validation: (Rule) => Rule.regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).error('Must be a valid hex color'),
+      initialValue: '#3B82F6',
+    }),
   ],
   preview: {
     select: {
