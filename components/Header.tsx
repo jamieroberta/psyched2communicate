@@ -49,13 +49,23 @@ export default function Header() {
             className="flex items-center space-x-2 text-xl font-bold text-primary-700 hover:text-primary-800 transition-colors"
           >
             {siteSettings?.siteLogo && siteSettings.siteLogo.length > 0 ? (
-              isImage(siteSettings.siteLogo) ? (
+              // Handle both old format (direct image) and new format (MediaField)
+              siteSettings.siteLogo[0]._type === 'image' ? (
+                // Old format: direct image
+                <img 
+                  src={urlFor(siteSettings.siteLogo[0]).width(96).height(96).fit('fillmax').quality(95).url()} 
+                  alt={siteSettings.siteLogo[0].alt || "Site Logo"} 
+                  className="h-20 w-20 object-contain"
+                />
+              ) : isImage(siteSettings.siteLogo) ? (
+                // New format: MediaField with image
                 <img 
                   src={urlFor(siteSettings.siteLogo[0].image).width(96).height(96).fit('fillmax').quality(95).url()} 
                   alt="Site Logo" 
                   className="h-20 w-20 object-contain"
                 />
               ) : (
+                // New format: MediaField with PDF
                 <div className="h-20 w-20 flex items-center justify-center bg-blue-100 rounded">
                   <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clipRule="evenodd" />
