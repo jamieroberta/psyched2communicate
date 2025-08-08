@@ -27,8 +27,20 @@ const generateColorVariations = (hexColor: string) => {
   }
 }
 
+// Slug aliases for common abbreviations
+const slugAliases: Record<string, string> = {
+  'ne': 'northeast',
+  'nw': 'northwest', 
+  'northeast': 'northeast',
+  'northwest': 'northwest',
+}
+
 // Query to fetch region by slug
 const getRegionBySlug = async (slug: string): Promise<Region | null> => {
+  // Normalize slug to lowercase and check for aliases
+  const normalizedSlug = slug.toLowerCase()
+  const actualSlug = slugAliases[normalizedSlug] || normalizedSlug
+  
   const query = `*[_type == "region" && slug.current == $slug][0] {
     _id,
     name,
@@ -40,11 +52,15 @@ const getRegionBySlug = async (slug: string): Promise<Region | null> => {
     color
   }`
   
-  return await sanityClient.fetch(query, { slug })
+  return await sanityClient.fetch(query, { slug: actualSlug })
 }
 
 // Query to fetch consultants by region
 const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
+  // Normalize slug to lowercase and check for aliases
+  const normalizedSlug = slug.toLowerCase()
+  const actualSlug = slugAliases[normalizedSlug] || normalizedSlug
+  
   const query = `*[_type == "consultant" && isActive == true && region->slug.current == $slug] | order(displayOrder asc, name asc) {
     _id,
     name,
@@ -62,8 +78,8 @@ const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
     }
   }`
   
-  console.log('Fetching consultants for region:', slug)
-  const result = await sanityClient.fetch(query, { slug })
+  console.log('Fetching consultants for region:', actualSlug)
+  const result = await sanityClient.fetch(query, { slug: actualSlug })
   console.log('Consultants found:', result.length, result.map(c => ({ name: c.name, isActive: c.isActive, displayOrder: c.displayOrder })))
   
   // Debug: Check all consultants for this region (including inactive ones)
@@ -74,7 +90,7 @@ const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
     displayOrder,
     region->{name, slug}
   }`
-  const allConsultants = await sanityClient.fetch(debugQuery, { slug })
+  const allConsultants = await sanityClient.fetch(debugQuery, { slug: actualSlug })
   console.log('All consultants for region (including inactive):', allConsultants)
   
   return result
