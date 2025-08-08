@@ -2,10 +2,10 @@ import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
 
 const config = {
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'h3prmcr9',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-12-01',
-  useCdn: process.env.NODE_ENV === 'production',
+  projectId: 'h3prmcr9',
+  dataset: 'production',
+  apiVersion: '2023-12-01',
+  useCdn: false, // Disable CDN temporarily for debugging
 }
 
 export const sanityClient = createClient(config)
