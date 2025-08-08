@@ -24,6 +24,9 @@ export default defineConfig({
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
             S.divider(),
             S.listItem()
+              .title('Homepage Banners')
+              .child(S.documentTypeList('banner').title('Homepage Banners')),
+            S.listItem()
               .title('Resources')
               .child(S.documentTypeList('resource').title('Resources')),
             S.listItem()
@@ -39,8 +42,8 @@ export default defineConfig({
               .title('Announcements')
               .child(S.documentTypeList('announcement').title('Announcements')),
             S.listItem()
-              .title('Posts')
-              .child(S.documentTypeList('post').title('Posts')),
+              .title('Job Listings')
+              .child(S.documentTypeList('jobListing').title('Job Listings')),
             S.listItem()
               .title('Pages')
               .child(S.documentTypeList('page').title('Pages')),

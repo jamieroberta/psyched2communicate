@@ -102,8 +102,8 @@ export default function Header() {
               </Link>
             ))}
 
-            <Link href="/posts" className="text-gray-700 hover:text-primary-600 transition-colors">
-              All Posts
+            <Link href="/jobs" className="text-gray-700 hover:text-primary-600 transition-colors">
+              Job Board
             </Link>
           </div>
 
@@ -160,11 +160,11 @@ export default function Header() {
               ))}
 
               <Link 
-                href="/posts" 
+                href="/jobs" 
                 className="block py-2 text-gray-700 hover:text-primary-600"
                 onClick={() => setIsMenuOpen(false)}
               >
-                All Posts
+                Job Board
               </Link>
             </div>
           </div>

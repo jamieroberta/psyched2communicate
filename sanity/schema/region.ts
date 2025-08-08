@@ -36,16 +36,6 @@ export default defineType({
       },
     }),
     defineField({
-      name: 'contactEmail',
-      title: 'Contact Email',
-      type: 'email',
-    }),
-    defineField({
-      name: 'contactPhone',
-      title: 'Contact Phone',
-      type: 'string',
-    }),
-    defineField({
       name: 'officeHoursInfo',
       title: 'Office Hours Information',
       type: 'text',
@@ -57,6 +47,12 @@ export default defineType({
       title: 'Scheduling Link',
       type: 'url',
       description: 'External link for scheduling appointments',
+    }),
+    defineField({
+      name: 'websiteLink',
+      title: 'Website Link',
+      type: 'url',
+      description: 'Link to the region\'s official website',
     }),
     defineField({
       name: 'color',

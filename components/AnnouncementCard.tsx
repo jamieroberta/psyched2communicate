@@ -76,7 +76,7 @@ export default function AnnouncementCard({ announcement, showFullContent = false
       <div className={compact ? "p-4" : "p-6"}>
         <div className={compact ? "mb-3" : "flex items-start justify-between mb-3"}>
           <div className="flex-1">
-            <h3 className={`${compact ? 'text-sm' : 'text-xl'} font-semibold text-gray-900 mb-2`}>
+            <h3 className={`${compact ? 'text-base' : 'text-xl'} font-semibold text-gray-900 mb-2`}>
               {announcement.title}
             </h3>
             <div className={`flex items-center gap-1 ${compact ? 'mb-2' : 'mb-3'} ${compact ? 'flex-wrap' : ''}`}>
@@ -120,7 +120,7 @@ export default function AnnouncementCard({ announcement, showFullContent = false
           </div>
         ) : (
           announcement.excerpt && (
-            <p className={`text-gray-600 text-sm mb-4 ${compact ? 'line-clamp-2' : 'line-clamp-3'}`}>
+            <p className={`text-gray-600 ${compact ? 'text-sm' : 'text-sm'} mb-4 ${compact ? 'line-clamp-3' : 'line-clamp-3'}`}>
               {announcement.excerpt}
             </p>
           )

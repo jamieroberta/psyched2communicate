@@ -21,10 +21,9 @@ export interface Region {
   slug: { current: string }
   description?: string
   logo?: any
-  contactEmail?: string
-  contactPhone?: string
   officeHoursInfo?: string
   schedulingLink?: string
+  websiteLink?: string
   color?: string
 }
 
@@ -32,27 +31,15 @@ export interface Consultant {
   _id: string
   name: string
   title: string
-  bio?: string
-  photo?: any
-  email?: string
-  phone?: string
+  image: any
+  email: string
+  phone: string
   region: Region
-  specialties?: string[]
+  isActive: boolean
+  displayOrder?: number
 }
 
-export interface Post {
-  _id: string
-  title: string
-  slug: { current: string }
-  type: 'job' | 'event' | 'announcement' | 'resource'
-  content: string
-  externalLink?: string
-  regions: Region[]
-  datePosted: string
-  eventDate?: string
-  tags?: string[]
-  featured: boolean
-}
+
 
 export interface Page {
   _id: string
@@ -109,5 +96,30 @@ export interface Resource {
   externalUrl?: string
   pdfFile?: any
   displayOrder?: number
+  isActive: boolean
+  region?: Region
+}
+
+export interface Banner {
+  _id: string
+  title: string
+  description: string
+  backgroundColor: string
+  textColor: string
+  startDate: string
+  endDate: string
+  linkUrl?: string
+  linkText?: string
+  isActive: boolean
+  priority: number
+}
+
+export interface JobListing {
+  _id: string
+  title: string
+  description: string
+  region: Region
+  applicationLink: string
+  postedDate: string
   isActive: boolean
 }

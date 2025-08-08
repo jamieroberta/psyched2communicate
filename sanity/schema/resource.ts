@@ -20,6 +20,13 @@ export default defineType({
       validation: (Rule) => Rule.max(150),
     }),
     defineField({
+      name: 'region',
+      title: 'Region',
+      type: 'reference',
+      to: [{ type: 'region' }],
+      description: 'Select a specific region for this resource. Leave empty to show on Home Page.',
+    }),
+    defineField({
       name: 'linkType',
       title: 'Link Type',
       type: 'string',
@@ -95,11 +102,13 @@ export default defineType({
       description: 'description',
       linkType: 'linkType',
       isActive: 'isActive',
+      regionName: 'region.name',
     },
-    prepare({ title, description, linkType, isActive }) {
+    prepare({ title, description, linkType, isActive, regionName }) {
+      const location = regionName || 'Home Page'
       return {
         title: title,
-        subtitle: `${linkType === 'external' ? '🔗' : '📄'} ${description || 'No description'} ${isActive ? '' : '(Inactive)'}`,
+        subtitle: `${linkType === 'external' ? '🔗' : '📄'} ${location} • ${description || 'No description'} ${isActive ? '' : '(Inactive)'}`,
       }
     },
   },
