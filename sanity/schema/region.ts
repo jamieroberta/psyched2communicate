@@ -42,12 +42,7 @@ export default defineType({
       description: 'Describe office hours or include scheduling links',
       rows: 3,
     }),
-    defineField({
-      name: 'schedulingLink',
-      title: 'Scheduling Link',
-      type: 'url',
-      description: 'External link for scheduling appointments',
-    }),
+
     defineField({
       name: 'websiteLink',
       title: 'Website Link',

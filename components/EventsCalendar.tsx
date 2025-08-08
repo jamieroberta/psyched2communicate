@@ -96,9 +96,12 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
     const now = new Date()
     const eventDate = new Date(event.startDate)
     
-    // Filter by view type
-    if (viewType === 'upcoming' && eventDate < now) return false
-    if (viewType === 'past' && eventDate >= now) return false
+    // Filter by view type - only apply in list view
+    if (displayMode === 'list') {
+      if (viewType === 'upcoming' && eventDate < now) return false
+      if (viewType === 'past' && eventDate >= now) return false
+    }
+    // In calendar view, always show all events (no time filtering)
     
     // Filter by region (if not region-specific page)
     if (!regionSlug && selectedRegion !== 'all') {
@@ -172,19 +175,21 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
       {/* Filters */}
       {showFilters && (
         <div className="flex flex-wrap gap-4 p-4 bg-gray-50 rounded-lg">
-          {/* View Type Filter */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">View:</label>
-            <select
-              value={viewType}
-              onChange={(e) => setViewType(e.target.value as typeof viewType)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="upcoming">Upcoming</option>
-              <option value="all">All Events</option>
-              <option value="past">Past Events</option>
-            </select>
-          </div>
+          {/* View Type Filter - only show in list view */}
+          {displayMode === 'list' && (
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">View:</label>
+              <select
+                value={viewType}
+                onChange={(e) => setViewType(e.target.value as typeof viewType)}
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="upcoming">Upcoming</option>
+                <option value="all">All Events</option>
+                <option value="past">Past Events</option>
+              </select>
+            </div>
+          )}
 
           {/* Region Filter (only for non-region-specific pages) */}
           {!regionSlug && regions.length > 0 && (

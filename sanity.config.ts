@@ -1,10 +1,10 @@
 import {defineConfig} from 'sanity'
-import {structureTool} from 'sanity/structure'
+import {deskTool} from 'sanity/desk'  
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './sanity/schema'
 
 const projectId = 'h3prmcr9'
-const dataset = 'production'
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 export default defineConfig({
   name: 'slpc-consultants',
@@ -12,10 +12,11 @@ export default defineConfig({
   
   projectId,
   dataset,
+  apiVersion: '2023-12-01',
   
   plugins: [
-    structureTool({
-      structure: (S) =>
+    deskTool({
+      structure: (S: any) =>
         S.list()
           .title('Content')
           .items([

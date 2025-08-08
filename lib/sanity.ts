@@ -22,7 +22,6 @@ export interface Region {
   description?: string
   logo?: any
   officeHoursInfo?: string
-  schedulingLink?: string
   websiteLink?: string
   color?: string
 }
@@ -34,6 +33,7 @@ export interface Consultant {
   image: any
   email: string
   phone: string
+  schedulingLink?: string
   region: Region
   isActive: boolean
   displayOrder?: number

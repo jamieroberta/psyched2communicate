@@ -49,7 +49,11 @@ export default defineType({
       type: 'reference',
       to: [{ type: 'region' }],
       description: 'The region this consultant serves',
-      validation: (Rule) => Rule.required(),
+      weak: false,
+      options: {
+        filter: '_type == "region"',
+        filterParams: {},
+      },
     }),
     defineField({
       name: 'isActive',
@@ -57,6 +61,12 @@ export default defineType({
       type: 'boolean',
       description: 'Whether this consultant should be displayed',
       initialValue: true,
+    }),
+    defineField({
+      name: 'schedulingLink',
+      title: 'Scheduling Link',
+      type: 'url',
+      description: 'External link for scheduling appointments with this consultant (e.g. Calendly, Acuity)',
     }),
     defineField({
       name: 'displayOrder',

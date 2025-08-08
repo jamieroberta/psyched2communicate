@@ -49,7 +49,7 @@ export default async function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Side - Hero Content */}
             <div className="text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">
                 {siteSettings?.homepageTitle || 'SLPC & SPC Consultants'}
               </h1>
               <p className="text-xl text-gray-700 mb-8 leading-relaxed">

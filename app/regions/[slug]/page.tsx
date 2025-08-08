@@ -5,6 +5,7 @@ import EventsCalendar from '@/components/EventsCalendar'
 import AnnouncementsSection from '@/components/AnnouncementsSection'
 import ResourcesSection from '@/components/ResourcesSection'
 import ThemedButton from '@/components/ThemedButton'
+import ConsultantSchedulingButton from '@/components/ConsultantSchedulingButton'
 
 // Helper function to generate color variations
 const generateColorVariations = (hexColor: string) => {
@@ -34,7 +35,6 @@ const getRegionBySlug = async (slug: string): Promise<Region | null> => {
     description,
     logo,
     officeHoursInfo,
-    schedulingLink,
     websiteLink,
     color
   }`
@@ -51,7 +51,9 @@ const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
     image,
     email,
     phone,
+    schedulingLink,
     displayOrder,
+    isActive,
     region->{
       _id,
       name,
@@ -59,7 +61,22 @@ const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
     }
   }`
   
-  return await sanityClient.fetch(query, { slug })
+  console.log('Fetching consultants for region:', slug)
+  const result = await sanityClient.fetch(query, { slug })
+  console.log('Consultants found:', result.length, result.map(c => ({ name: c.name, isActive: c.isActive, displayOrder: c.displayOrder })))
+  
+  // Debug: Check all consultants for this region (including inactive ones)
+  const debugQuery = `*[_type == "consultant" && region->slug.current == $slug] {
+    _id,
+    name,
+    isActive,
+    displayOrder,
+    region->{name, slug}
+  }`
+  const allConsultants = await sanityClient.fetch(debugQuery, { slug })
+  console.log('All consultants for region (including inactive):', allConsultants)
+  
+  return result
 }
 
 export default async function RegionPage({ params }: { params: { slug: string } }) {
@@ -106,37 +123,20 @@ export default async function RegionPage({ params }: { params: { slug: string } 
               )}
               
               {/* Action Buttons */}
-              {(region.websiteLink || region.schedulingLink) && (
+              {region.websiteLink && (
                 <div className="flex flex-wrap gap-4 mt-6">
-                  {region.websiteLink && (
-                    <ThemedButton 
-                      href={region.websiteLink}
-                      variant="primary"
-                      colors={colors}
-                      icon={
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                        </svg>
-                      }
-                    >
-                      Visit Website
-                    </ThemedButton>
-                  )}
-                  
-                  {region.schedulingLink && (
-                    <ThemedButton 
-                      href={region.schedulingLink}
-                      variant="secondary"
-                      colors={colors}
-                      icon={
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M7 21h10a2 2 0 002-2V8a2 2 0 00-2-2H7a2 2 0 00-2 2v11a2 2 0 002 2z" />
-                        </svg>
-                      }
-                    >
-                      Schedule Appointment
-                    </ThemedButton>
-                  )}
+                  <ThemedButton 
+                    href={region.websiteLink}
+                    variant="primary"
+                    colors={colors}
+                    icon={
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                      </svg>
+                    }
+                  >
+                    Visit Website
+                  </ThemedButton>
                 </div>
               )}
             </div>
@@ -153,11 +153,11 @@ export default async function RegionPage({ params }: { params: { slug: string } 
             </div>
             
             {consultants.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 gap-8">
                 {consultants.map(consultant => (
                   <div 
                     key={consultant._id} 
-                    className="bg-white rounded-xl p-6 shadow-lg border border-opacity-20 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    className="bg-white rounded-xl p-6 shadow-lg border border-opacity-20 hover:shadow-xl transition-shadow duration-300"
                     style={{ borderColor: colors.primary }}
                   >
                     <div className="flex items-start gap-4">
@@ -204,6 +204,16 @@ export default async function RegionPage({ params }: { params: { slug: string } 
                             </a>
                           </div>
                         </div>
+                        
+                        {/* Scheduling Button */}
+                        {consultant.schedulingLink && (
+                          <div className="mt-4 pt-3 border-t border-gray-200">
+                            <ConsultantSchedulingButton 
+                              href={consultant.schedulingLink}
+                              colors={colors}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -44,16 +44,16 @@ export default function Header() {
   return (
     <header className="bg-white shadow-lg border-b-2 border-blue-600">
       <nav className="container">
-        <div className="flex justify-between items-center min-h-16 py-3">
+        <div className="flex justify-between items-center min-h-20 py-4">
           <Link 
             href="/" 
             className="flex items-center space-x-2 text-xl font-bold text-primary-700 hover:text-primary-800 transition-colors"
           >
             {siteSettings?.siteLogo ? (
               <img 
-                src={urlFor(siteSettings.siteLogo).height(40).fit('max').url()} 
+                src={urlFor(siteSettings.siteLogo).width(96).height(96).fit('fillmax').quality(95).url()} 
                 alt="Site Logo" 
-                className="h-10 w-auto max-w-[200px]"
+                className="h-20 w-20 object-contain"
               />
             ) : (
               <>
@@ -72,13 +72,13 @@ export default function Header() {
             </Link>
             
             <div className="relative group">
-              <button className="text-gray-800 hover:text-blue-600 font-medium transition-colors flex items-center relative">
+              <Link href="/regions" className="text-gray-800 hover:text-blue-600 font-medium transition-colors flex items-center relative">
                 Regions
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-              </button>
+              </Link>
               <div className="absolute left-0 mt-2 w-52 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="py-2">
                   {regions.map((region) => (
@@ -137,7 +137,13 @@ export default function Header() {
               </Link>
               
               <div className="py-2">
-                <p className="text-sm font-medium text-gray-900 mb-2">Regions:</p>
+                <Link 
+                  href="/regions"
+                  className="text-sm font-medium text-gray-900 hover:text-primary-600 mb-2 block"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Regions:
+                </Link>
                 <div className="pl-4 space-y-1">
                   {regions.map((region) => (
                     <Link
