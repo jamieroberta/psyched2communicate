@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { sanityClient, urlFor } from '@/lib/sanity'
-import type { Region, Page, SiteSettings } from '@/lib/sanity'
+import { sanityClient, urlFor, Region, Page, SiteSettings, getMediaUrl, isImage } from '@/lib/sanity'
 
 export default function Header() {
   const [regions, setRegions] = useState<Region[]>([])
@@ -49,12 +48,20 @@ export default function Header() {
             href="/" 
             className="flex items-center space-x-2 text-xl font-bold text-primary-700 hover:text-primary-800 transition-colors"
           >
-            {siteSettings?.siteLogo ? (
-              <img 
-                src={urlFor(siteSettings.siteLogo).width(96).height(96).fit('fillmax').quality(95).url()} 
-                alt="Site Logo" 
-                className="h-20 w-20 object-contain"
-              />
+            {siteSettings?.siteLogo && siteSettings.siteLogo.length > 0 ? (
+              isImage(siteSettings.siteLogo) ? (
+                <img 
+                  src={urlFor(siteSettings.siteLogo[0].image).width(96).height(96).fit('fillmax').quality(95).url()} 
+                  alt="Site Logo" 
+                  className="h-20 w-20 object-contain"
+                />
+              ) : (
+                <div className="h-20 w-20 flex items-center justify-center bg-blue-100 rounded">
+                  <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )
             ) : (
               <>
                 <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">

@@ -3,12 +3,12 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { sanityClient, urlFor } from '@/lib/sanity'
+import { sanityClient, urlFor, SiteSettings, getMediaUrl, isImage } from '@/lib/sanity'
 
 const inter = Inter({ subsets: ['latin'] })
 
 // Fetch site settings for metadata
-const getSiteSettings = async () => {
+const getSiteSettings = async (): Promise<SiteSettings | null> => {
   const query = `*[_type == "siteSettings"][0] {
     homepageTitle,
     homepageSubtitle,
@@ -25,8 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = siteSettings?.homepageSubtitle || "Speech-Language Pathology and School Psychology consultants across Ohio's Educational Service Centers"
   
   // Generate favicon URL from site logo if available
-  const favicon = siteSettings?.siteLogo 
-    ? urlFor(siteSettings.siteLogo).width(32).height(32).format('png').url()
+  const favicon = siteSettings?.siteLogo && siteSettings.siteLogo.length > 0 && isImage(siteSettings.siteLogo)
+    ? urlFor(siteSettings.siteLogo[0].image).width(32).height(32).format('png').url()
     : '/favicon.ico'
 
   return {

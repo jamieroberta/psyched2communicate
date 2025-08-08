@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import { sanityClient, urlFor, Region, Consultant } from '@/lib/sanity'
+import { sanityClient, urlFor, Region, Consultant, getMediaUrl } from '@/lib/sanity'
+import MediaDisplay from '@/components/MediaDisplay'
 import Image from 'next/image'
 import EventsCalendar from '@/components/EventsCalendar'
 import AnnouncementsSection from '@/components/AnnouncementsSection'
@@ -105,14 +106,15 @@ export default async function RegionPage({ params }: { params: { slug: string } 
         <div className="container py-12 max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-8 border border-opacity-30" style={{ borderColor: colors.primary }}>
             <div className="flex items-center gap-6 mb-8">
-            {region.logo && (
+            {region.logo && region.logo.length > 0 && (
               <div className="flex-shrink-0">
-                <Image
-                  src={urlFor(region.logo).width(120).height(120).url()}
-                  alt={`${region.name} logo`}
+                <MediaDisplay
+                  media={region.logo}
                   width={120}
                   height={120}
+                  alt={`${region.name} logo`}
                   className="rounded-lg object-cover"
+                  showDownloadLink={false}
                 />
               </div>
             )}

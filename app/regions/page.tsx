@@ -1,6 +1,7 @@
-import { sanityClient, urlFor, Region } from '@/lib/sanity'
+import { sanityClient, Region, getMediaUrl, isImage } from '@/lib/sanity'
 import Image from 'next/image'
 import Link from 'next/link'
+import MediaDisplay from '@/components/MediaDisplay'
 
 // Query to fetch all regions
 const getAllRegions = async (): Promise<Region[]> => {
@@ -49,14 +50,15 @@ export default async function RegionsPage() {
               className="group"
             >
               <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300 transform hover:-translate-y-1">
-                {region.logo && (
+                {region.logo && region.logo.length > 0 && (
                   <div className="aspect-w-16 aspect-h-9 bg-gray-100">
-                    <Image
-                      src={urlFor(region.logo).width(400).height(240).url()}
-                      alt={`${region.name} logo`}
+                    <MediaDisplay
+                      media={region.logo}
                       width={400}
                       height={240}
+                      alt={`${region.name} logo`}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      showDownloadLink={false}
                     />
                   </div>
                 )}
