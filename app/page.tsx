@@ -60,7 +60,7 @@ export default async function HomePage() {
             {/* Right Side - Google Map */}
             <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-200">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4 text-center lg:text-left">
-                Service Areas
+                Regional Map
               </h2>
               <GoogleMap 
                 mapId="17lkGMv8UcPWPN0NaXOg2BuXpeKMtL2I"
@@ -68,9 +68,6 @@ export default async function HomePage() {
                 height="280px"
                 className="w-full rounded-lg shadow-sm"
               />
-              <p className="text-sm text-gray-600 mt-3 text-center lg:text-left">
-                Explore our regional Educational Service Centers across Ohio
-              </p>
             </div>
           </div>
         </div>
