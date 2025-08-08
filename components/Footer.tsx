@@ -1,15 +1,28 @@
 import Link from 'next/link'
+import { sanityClient } from '@/lib/sanity'
 
-export default function Footer() {
+// Fetch site settings for footer
+const getSiteSettings = async () => {
+  const query = `*[_type == "siteSettings"][0] {
+    homepageTitle,
+    homepageSubtitle
+  }`
+  
+  return await sanityClient.fetch(query)
+}
+
+export default async function Footer() {
+  const siteSettings = await getSiteSettings()
   return (
     <footer className="bg-gray-800 text-white mt-12">
       <div className="container py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-4">SLPC & SPC Consultants</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {siteSettings?.homepageTitle || 'SLPC & SPC Consultants'}
+            </h3>
             <p className="text-gray-300 text-sm">
-              Supporting Speech-Language Pathology and School Psychology consultants 
-              across Ohio's Educational Service Centers.
+              {siteSettings?.homepageSubtitle || 'Supporting Speech-Language Pathology and School Psychology consultants across Ohio\'s Educational Service Centers'}
             </p>
           </div>
 
@@ -22,18 +35,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/posts" className="text-gray-300 hover:text-white transition-colors">
-                  All Posts
-                </Link>
-              </li>
-              <li>
-                <Link href="/posts?type=job" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/jobs" className="text-gray-300 hover:text-white transition-colors">
                   Job Postings
                 </Link>
               </li>
               <li>
-                <Link href="/posts?type=event" className="text-gray-300 hover:text-white transition-colors">
-                  Events
+                <Link href="/regions" className="text-gray-300 hover:text-white transition-colors">
+                  Regional Info
                 </Link>
               </li>
             </ul>

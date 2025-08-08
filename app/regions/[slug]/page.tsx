@@ -14,7 +14,8 @@ const getRegionBySlug = async (slug: string): Promise<Region | null> => {
     description,
     logo,
     officeHoursInfo,
-    schedulingLink
+    schedulingLink,
+    websiteLink
   }`
   
   return await sanityClient.fetch(query, { slug })
@@ -69,7 +70,40 @@ export default async function RegionPage({ params }: { params: { slug: string } 
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">{region.name}</h1>
               {region.description && (
-                <p className="text-lg text-gray-600">{region.description}</p>
+                <p className="text-lg text-gray-600 mb-4">{region.description}</p>
+              )}
+              
+              {/* Action Buttons */}
+              {(region.websiteLink || region.schedulingLink) && (
+                <div className="flex flex-wrap gap-3 mt-4">
+                  {region.websiteLink && (
+                    <a
+                      href={region.websiteLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                      </svg>
+                      Visit Website
+                    </a>
+                  )}
+                  
+                  {region.schedulingLink && (
+                    <a
+                      href={region.schedulingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M7 21h10a2 2 0 002-2V8a2 2 0 00-2-2H7a2 2 0 00-2 2v11a2 2 0 002 2z" />
+                      </svg>
+                      Schedule Appointment
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -108,7 +142,7 @@ export default async function RegionPage({ params }: { params: { slug: string } 
                             </svg>
                             <a 
                               href={`mailto:${consultant.email}`}
-                              className="text-sm text-gray-700 hover:text-blue-600 transition-colors truncate"
+                              className="text-sm text-gray-700 hover:text-blue-600 transition-colors break-all"
                             >
                               {consultant.email}
                             </a>

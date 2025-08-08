@@ -84,9 +84,6 @@ export default function JobBoardPage() {
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Job Board</h1>
-        <p className="text-xl text-gray-600">
-          Find career opportunities with Speech-Language Pathology and School Psychology services across Ohio
-        </p>
       </div>
 
       {/* Filters */}
