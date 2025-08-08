@@ -80,42 +80,46 @@ export default function JobBoardPage() {
   }
 
   return (
-    <div className="container py-16">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Job Board</h1>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 p-6 bg-gray-50 rounded-lg mb-8">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Region:</label>
-          <select
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Regions</option>
-            {regions.map(region => (
-              <option key={region._id} value={region.slug.current}>
-                {region.name}
-              </option>
-            ))}
-          </select>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container py-16">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-4">
+            Career Opportunities
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Job Board</h1>
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
-          <span className="text-sm text-gray-600">
-            {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'} found
-          </span>
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 p-6 bg-white rounded-xl shadow-lg border border-gray-200 mb-8">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Region:</label>
+            <select
+              value={selectedRegion}
+              onChange={(e) => setSelectedRegion(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Regions</option>
+              {regions.map(region => (
+                <option key={region._id} value={region.slug.current}>
+                  {region.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-sm text-gray-600">
+              {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'} found
+            </span>
+          </div>
         </div>
-      </div>
 
       {/* Job Listings */}
       {filteredJobs.length > 0 ? (
         <div className="space-y-6">
           {filteredJobs.map(job => (
-            <div key={job._id} className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+            <div key={job._id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-blue-300">
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -149,7 +153,7 @@ export default function JobBoardPage() {
                     href={job.applicationLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                   >
                     Apply Now
                     <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,6 +176,7 @@ export default function JobBoardPage() {
           </p>
         </div>
       )}
+      </div>
     </div>
   )
 }

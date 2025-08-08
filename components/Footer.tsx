@@ -14,8 +14,8 @@ const getSiteSettings = async () => {
 export default async function Footer() {
   const siteSettings = await getSiteSettings()
   return (
-    <footer className="bg-gray-800 text-white mt-12">
-      <div className="container py-8">
+    <footer className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-12 border-t-4 border-blue-600">
+      <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">
@@ -27,20 +27,23 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-lg font-semibold mb-4 text-blue-300">Quick Links</h3>
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/" className="text-gray-300 hover:text-blue-300 transition-colors flex items-center group">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3 group-hover:bg-blue-300 transition-colors"></span>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/jobs" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/jobs" className="text-gray-300 hover:text-blue-300 transition-colors flex items-center group">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3 group-hover:bg-blue-300 transition-colors"></span>
                   Job Postings
                 </Link>
               </li>
               <li>
-                <Link href="/regions" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/regions" className="text-gray-300 hover:text-blue-300 transition-colors flex items-center group">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3 group-hover:bg-blue-300 transition-colors"></span>
                   Regional Info
                 </Link>
               </li>
@@ -48,8 +51,8 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <p className="text-gray-300 text-sm">
+            <h3 className="text-lg font-semibold mb-4 text-blue-300">Contact</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
               For technical issues or questions about this website, 
               please contact your regional administrator.
             </p>

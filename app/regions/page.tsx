@@ -19,10 +19,14 @@ export default async function RegionsPage() {
   const regions = await getAllRegions()
 
   return (
-    <div className="container py-8 max-w-6xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Regions</h1>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container py-16 max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <div className="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-4">
+            Educational Service Centers
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Regions</h1>
+        </div>
 
       {regions.length === 0 ? (
         <div className="text-center py-12">
@@ -44,7 +48,7 @@ export default async function RegionsPage() {
               href={`/regions/${region.slug.current}`}
               className="group"
             >
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300 transform hover:-translate-y-1">
                 {region.logo && (
                   <div className="aspect-w-16 aspect-h-9 bg-gray-100">
                     <Image
@@ -68,9 +72,12 @@ export default async function RegionsPage() {
                     </p>
                   )}
                   
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <span className="text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
-                      View Details →
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <span className="inline-flex items-center text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
+                      View Details 
+                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </span>
                   </div>
                 </div>
@@ -79,6 +86,7 @@ export default async function RegionsPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 } 

@@ -4,6 +4,26 @@ import Image from 'next/image'
 import EventsCalendar from '@/components/EventsCalendar'
 import AnnouncementsSection from '@/components/AnnouncementsSection'
 import ResourcesSection from '@/components/ResourcesSection'
+import ThemedButton from '@/components/ThemedButton'
+
+// Helper function to generate color variations
+const generateColorVariations = (hexColor: string) => {
+  // Remove # if present
+  const color = hexColor.replace('#', '')
+  
+  // Convert hex to RGB
+  const r = parseInt(color.substr(0, 2), 16)
+  const g = parseInt(color.substr(2, 2), 16)
+  const b = parseInt(color.substr(4, 2), 16)
+  
+  return {
+    primary: `rgb(${r}, ${g}, ${b})`,
+    light: `rgba(${r}, ${g}, ${b}, 0.1)`,
+    medium: `rgba(${r}, ${g}, ${b}, 0.8)`,
+    gradient: `linear-gradient(135deg, rgb(${r}, ${g}, ${b}), rgb(${Math.max(0, r-30)}, ${Math.max(0, g-30)}, ${Math.max(0, b-30)}))`,
+    border: `rgba(${r}, ${g}, ${b}, 0.3)`
+  }
+}
 
 // Query to fetch region by slug
 const getRegionBySlug = async (slug: string): Promise<Region | null> => {
@@ -15,7 +35,8 @@ const getRegionBySlug = async (slug: string): Promise<Region | null> => {
     logo,
     officeHoursInfo,
     schedulingLink,
-    websiteLink
+    websiteLink,
+    color
   }`
   
   return await sanityClient.fetch(query, { slug })
@@ -50,12 +71,23 @@ export default async function RegionPage({ params }: { params: { slug: string } 
 
   const consultants = await getConsultantsByRegion(params.slug)
 
+  // Generate dynamic colors based on region color
+  const regionColor = region.color || '#3B82F6' // Default to blue
+  const colors = generateColorVariations(regionColor)
+
   return (
     <div>
-      {/* Header Section */}
-      <div className="container py-8 max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="flex items-center gap-6 mb-8">
+      {/* Hero Section with Region Branding */}
+      <div 
+        className="border-b-2"
+        style={{ 
+          background: colors.light,
+          borderBottomColor: colors.primary
+        }}
+      >
+        <div className="container py-12 max-w-6xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-opacity-30" style={{ borderColor: colors.primary }}>
+            <div className="flex items-center gap-6 mb-8">
             {region.logo && (
               <div className="flex-shrink-0">
                 <Image
@@ -68,40 +100,42 @@ export default async function RegionPage({ params }: { params: { slug: string } 
               </div>
             )}
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">{region.name}</h1>
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">{region.name}</h1>
               {region.description && (
-                <p className="text-lg text-gray-600 mb-4">{region.description}</p>
+                <p className="text-xl text-gray-700 mb-6 leading-relaxed">{region.description}</p>
               )}
               
               {/* Action Buttons */}
               {(region.websiteLink || region.schedulingLink) && (
-                <div className="flex flex-wrap gap-3 mt-4">
+                <div className="flex flex-wrap gap-4 mt-6">
                   {region.websiteLink && (
-                    <a
+                    <ThemedButton 
                       href={region.websiteLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      variant="primary"
+                      colors={colors}
+                      icon={
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                        </svg>
+                      }
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                      </svg>
                       Visit Website
-                    </a>
+                    </ThemedButton>
                   )}
                   
                   {region.schedulingLink && (
-                    <a
+                    <ThemedButton 
                       href={region.schedulingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                      variant="secondary"
+                      colors={colors}
+                      icon={
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M7 21h10a2 2 0 002-2V8a2 2 0 00-2-2H7a2 2 0 00-2 2v11a2 2 0 002 2z" />
+                        </svg>
+                      }
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M7 21h10a2 2 0 002-2V8a2 2 0 00-2-2H7a2 2 0 00-2 2v11a2 2 0 002 2z" />
-                      </svg>
                       Schedule Appointment
-                    </a>
+                    </ThemedButton>
                   )}
                 </div>
               )}
@@ -109,13 +143,23 @@ export default async function RegionPage({ params }: { params: { slug: string } 
           </div>
 
           {/* Consultants Information */}
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Consultants</h2>
+          <div className="mt-8 pt-8 border-t border-gray-200">
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-1 h-8 rounded-full"
+                style={{ backgroundColor: colors.primary }}
+              ></div>
+              <h2 className="text-3xl font-bold text-gray-900">Our Consultants</h2>
+            </div>
             
             {consultants.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {consultants.map(consultant => (
-                  <div key={consultant._id} className="bg-gray-100 rounded-lg p-6">
+                  <div 
+                    key={consultant._id} 
+                    className="bg-white rounded-xl p-6 shadow-lg border border-opacity-20 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    style={{ borderColor: colors.primary }}
+                  >
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0">
                         <Image
@@ -179,43 +223,69 @@ export default async function RegionPage({ params }: { params: { slug: string } 
           </div>
         </div>
       </div>
+      </div>
 
       {/* Main Content Area with Sidebar - Similar to Home Page */}
-      <div className="container py-16">
-        <div className="grid lg:grid-cols-3 xl:grid-cols-5 gap-8 lg:gap-12">
-          {/* Main Content - Left Side (Events Calendar) */}
-          <div className="lg:col-span-2 xl:col-span-3 space-y-8">
-            <div>
-              <EventsCalendar 
-                regionSlug={region.slug.current} 
-                showFilters={false}
-                maxEvents={12}
-              />
+      <div style={{ backgroundColor: colors.light }}>
+        <div className="container py-16">
+          <div className="grid lg:grid-cols-3 xl:grid-cols-5 gap-8 lg:gap-12">
+            {/* Main Content - Left Side (Events Calendar) */}
+            <div className="lg:col-span-2 xl:col-span-3 space-y-8">
+              <div className="bg-white rounded-xl shadow-lg border border-opacity-20 overflow-hidden" style={{ borderColor: colors.primary }}>
+                <div 
+                  className="px-6 py-4"
+                  style={{ background: colors.gradient }}
+                >
+                  <h2 className="text-2xl font-bold text-white">Regional Events</h2>
+                  <p className="text-white text-opacity-90 mt-1">Stay updated with events in {region.name}</p>
+                </div>
+                <div className="p-6">
+                  <EventsCalendar 
+                    regionSlug={region.slug.current} 
+                    showFilters={false}
+                    maxEvents={12}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Right Sidebar (Announcements & Resources) */}
-          <div className="lg:col-span-1 xl:col-span-2">
-            <div className="sticky top-8 space-y-6">
-              {/* Region Resources Sidebar Widget */}
-              <div className="bg-white rounded-lg shadow-md">
-                <ResourcesSection 
-                  regionSlug={region.slug.current}
-                  compact={true}
-                />
+            {/* Right Sidebar (Announcements & Resources) */}
+            <div className="lg:col-span-1 xl:col-span-2">
+              <div className="sticky top-8 space-y-6">
+                {/* Region Resources Sidebar Widget */}
+                <div className="bg-white rounded-xl shadow-lg border border-opacity-20 overflow-hidden hover:shadow-xl transition-shadow" style={{ borderColor: colors.primary }}>
+                  <div 
+                    className="px-6 py-4"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.medium})`
+                    }}
+                  >
+                    <h3 className="text-lg font-bold text-white">Regional Resources</h3>
+                  </div>
+                  <ResourcesSection 
+                    regionSlug={region.slug.current}
+                    compact={true}
+                  />
+                </div>
+
+                {/* Region Announcements Sidebar Widget */}
+                <div className="bg-white rounded-xl shadow-lg border border-opacity-20 overflow-hidden hover:shadow-xl transition-shadow" style={{ borderColor: colors.primary }}>
+                  <div 
+                    className="px-6 py-4"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.medium}, ${colors.primary})`
+                    }}
+                  >
+                    <h3 className="text-lg font-bold text-white">Announcements</h3>
+                  </div>
+                  <AnnouncementsSection 
+                    regionSlug={region.slug.current} 
+                    showFilters={false}
+                    maxAnnouncements={8}
+                    compact={true}
+                  />
+                </div>
               </div>
-
-              {/* Region Announcements Sidebar Widget */}
-              <div className="bg-white rounded-lg shadow-md">
-                <AnnouncementsSection 
-                  regionSlug={region.slug.current} 
-                  showFilters={false}
-                  maxAnnouncements={8}
-                  compact={true}
-                />
-              </div>
-
-
             </div>
           </div>
         </div>
