@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {simpleMediaField} from './mediaField'
 
 export default defineType({
   name: 'consultant',
@@ -19,15 +20,10 @@ export default defineType({
       description: 'Consultant\'s job title or position',
       validation: (Rule) => Rule.required().max(100),
     }),
-    defineField({
-      name: 'image',
-      title: 'Profile Photo',
-      type: 'image',
-      description: 'Professional headshot or profile photo',
-      options: {
-        hotspot: true,
-      },
-      validation: (Rule) => Rule.required(),
+    simpleMediaField('image', 'Profile Photo or Document', {
+      description: 'Professional headshot, profile photo, or CV/resume document',
+      hotspot: true,
+      required: true,
     }),
     defineField({
       name: 'email',

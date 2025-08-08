@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {simpleMediaField} from './mediaField'
 
 export default defineType({
   name: 'announcement',
@@ -127,20 +128,16 @@ export default defineType({
       description: 'Pin this announcement to the top of the list',
       initialValue: false,
     }),
-    defineField({
-      name: 'image',
-      title: 'Featured Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+    simpleMediaField('media', 'Featured Image or PDF', {
+      description: 'Upload a featured image or PDF document for this announcement',
+      hotspot: true,
     }),
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'region.name',
-      media: 'image',
+      media: 'media',
       priority: 'priority',
       isPinned: 'isPinned',
     },

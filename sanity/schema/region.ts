@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {simpleMediaField} from './mediaField'
 
 export default defineType({
   name: 'region',
@@ -27,13 +28,9 @@ export default defineType({
       type: 'text',
       rows: 4,
     }),
-    defineField({
-      name: 'logo',
-      title: 'Region Logo',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+    simpleMediaField('logo', 'Region Logo or Document', {
+      description: 'Upload a region logo image or identifying document',
+      hotspot: true,
     }),
     defineField({
       name: 'officeHoursInfo',

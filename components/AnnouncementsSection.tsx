@@ -48,7 +48,7 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
           priority,
           category,
           isPinned,
-          image,
+          media,
           region->{
             _id,
             name,

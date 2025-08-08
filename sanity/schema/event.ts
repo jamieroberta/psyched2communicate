@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {simpleMediaField} from './mediaField'
 
 export default defineType({
   name: 'event',
@@ -91,20 +92,16 @@ export default defineType({
       type: 'url',
       hidden: ({document}) => !document?.registrationRequired,
     }),
-    defineField({
-      name: 'image',
-      title: 'Event Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+    simpleMediaField('media', 'Event Image or PDF', {
+      description: 'Upload an event image or PDF document (flyer, agenda, etc.)',
+      hotspot: true,
     }),
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'region.name',
-      media: 'image',
+      media: 'media',
       startDate: 'startDate',
     },
     prepare(selection) {

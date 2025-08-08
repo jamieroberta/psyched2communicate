@@ -14,13 +14,44 @@ const builder = imageUrlBuilder(sanityClient)
 
 export const urlFor = (source: any) => builder.image(source)
 
+// Helper functions for new media field format
+export const getMediaUrl = (mediaField?: MediaField[]): string | null => {
+  if (!mediaField || !mediaField[0]) return null
+  
+  const media = mediaField[0]
+  if (media.mediaType === 'image' && media.image) {
+    return urlFor(media.image).url()
+  } else if (media.mediaType === 'pdf' && media.pdf) {
+    return media.pdf.asset.url
+  }
+  return null
+}
+
+export const getMediaType = (mediaField?: MediaField[]): 'image' | 'pdf' | null => {
+  if (!mediaField || !mediaField[0]) return null
+  return mediaField[0].mediaType || null
+}
+
+export const getMediaAlt = (mediaField?: MediaField[]): string => {
+  if (!mediaField || !mediaField[0]) return ''
+  return mediaField[0].alt || mediaField[0].description || ''
+}
+
+export const isImage = (mediaField?: MediaField[]): boolean => {
+  return getMediaType(mediaField) === 'image'
+}
+
+export const isPDF = (mediaField?: MediaField[]): boolean => {
+  return getMediaType(mediaField) === 'pdf'
+}
+
 // Types for our content
 export interface Region {
   _id: string
   name: string
   slug: { current: string }
   description?: string
-  logo?: any
+  logo?: MediaField[]
   officeHoursInfo?: string
   websiteLink?: string
   color?: string
@@ -30,7 +61,7 @@ export interface Consultant {
   _id: string
   name: string
   title: string
-  image: any
+  image: MediaField[]
   email: string
   phone: string
   schedulingLink?: string
@@ -49,6 +80,14 @@ export interface Page {
   showOnNavigation: boolean
 }
 
+export interface MediaField {
+  mediaType?: 'image' | 'pdf'
+  image?: any
+  pdf?: any
+  alt?: string
+  description?: string
+}
+
 export interface Event {
   _id: string
   title: string
@@ -63,7 +102,7 @@ export interface Event {
   category: 'training' | 'workshop' | 'meeting' | 'conference' | 'social' | 'other'
   registrationRequired: boolean
   registrationLink?: string
-  image?: any
+  media?: MediaField[]
 }
 
 export interface Announcement {
@@ -78,12 +117,12 @@ export interface Announcement {
   priority: 'low' | 'normal' | 'high' | 'urgent'
   category: 'general' | 'policy' | 'training' | 'event' | 'system' | 'emergency'
   isPinned: boolean
-  image?: any
+  media?: MediaField[]
 }
 
 export interface SiteSettings {
   _id: string
-  siteLogo?: any
+  siteLogo?: MediaField[]
   homepageTitle?: string
   homepageSubtitle?: string
 }

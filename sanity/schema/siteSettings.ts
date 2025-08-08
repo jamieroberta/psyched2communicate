@@ -1,24 +1,15 @@
 import {defineField, defineType} from 'sanity'
+import {simpleMediaField} from './mediaField'
 
 export default defineType({
   name: 'siteSettings',
   title: 'Site Settings',
   type: 'document',
   fields: [
-    defineField({
-      name: 'siteLogo',
-      title: 'Site Logo',
-      type: 'image',
-      description: 'Logo that appears in the top-left corner of the navigation bar. For best results, upload a square image (1:1 aspect ratio) at least 200x200 pixels.',
-      options: {
-        hotspot: true,
-        accept: 'image/*',
-      },
-      validation: (Rule) => Rule.required().custom((image) => {
-        // Note: We can't validate aspect ratio in Sanity validation,
-        // but the description guides users to upload square images
-        return true
-      }),
+    simpleMediaField('siteLogo', 'Site Logo', {
+      description: 'Logo that appears in the top-left corner of the navigation bar. For best results, upload a square image (1:1 aspect ratio) at least 200x200 pixels, or your organization\'s brand document.',
+      hotspot: true,
+      required: true,
     }),
     defineField({
       name: 'homepageTitle',
