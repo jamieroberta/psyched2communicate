@@ -89,7 +89,7 @@ export default defineType({
       title: 'Region',
       type: 'reference',
       to: [{type: 'region'}],
-      validation: (Rule) => Rule.required(),
+      description: 'Select a region for this announcement. If no region is selected, the announcement will display on the home page.',
     }),
     defineField({
       name: 'priority',
@@ -151,10 +151,11 @@ export default defineType({
       }[priority] || ''
       
       const pinnedText = isPinned ? '📌 ' : ''
+      const displaySubtitle = subtitle || 'Home Page'
       
       return {
         title: `${pinnedText}${priorityEmoji} ${title}`,
-        subtitle: subtitle,
+        subtitle: displaySubtitle,
         media: media,
       }
     },

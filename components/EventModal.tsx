@@ -99,17 +99,98 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
                   </button>
                 </div>
 
-                {/* Event Image */}
-                {event.image && (
-                  <div className="relative h-64 w-full">
-                    <Image
-                      src={urlFor(event.image).width(800).height(400).url()}
-                      alt={event.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
+                {/* Event Image/Media */}
+                {event.media && event.media.length > 0 && (() => {
+                  const mediaItem = event.media[0]
+                  const isImage = mediaItem._type === 'image'
+                  const isPDF = mediaItem._type === 'file'
+                  
+                  if (isImage) {
+                    return (
+                      <div className="relative h-64 w-full cursor-pointer group">
+                        <a
+                          href={urlFor(mediaItem).width(1200).height(800).url()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block relative h-full w-full"
+                        >
+                          <Image
+                            src={urlFor(mediaItem).width(800).height(400).url()}
+                            alt={mediaItem.alt || event.title}
+                            fill
+                            className="object-cover transition-opacity group-hover:opacity-90"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-25">
+                            <div className="bg-white bg-opacity-90 rounded-full p-3">
+                              <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    )
+                  } else if (isPDF) {
+                    const pdfUrl = mediaItem.asset?.url
+                    const fileName = mediaItem.asset?.originalFilename || 'PDF Document'
+                    
+                    if (!pdfUrl) {
+                      return (
+                        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-8 text-center">
+                          <div className="mx-auto h-16 w-16 text-red-400">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <h3 className="mt-2 text-sm font-medium text-red-900">PDF Not Available</h3>
+                          <p className="mt-1 text-xs text-red-600">The PDF file could not be loaded</p>
+                        </div>
+                      )
+                    }
+                    
+                    return (
+                      <div className="relative">
+                        {/* PDF Preview */}
+                        <div className="relative h-96 w-full border border-gray-300 rounded-lg overflow-hidden bg-white">
+                          <iframe
+                            src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                            className="w-full h-full"
+                            title={fileName}
+                          />
+                          {/* Overlay for click to open in new tab */}
+                          <div className="absolute inset-0 bg-transparent cursor-pointer group flex items-end">
+                            <div className="w-full bg-gradient-to-t from-black/70 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <a
+                                href={pdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 text-white hover:text-blue-200 transition-colors"
+                                onClick={(e) => {
+                                  console.log('Event PDF clicked:', pdfUrl)
+                                  e.stopPropagation()
+                                }}
+                              >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                <span className="text-sm font-medium">Open full PDF in new tab</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* PDF Info */}
+                        <div className="mt-3 text-center">
+                          <h3 className="text-sm font-medium text-gray-900">{fileName}</h3>
+                          {mediaItem.description && (
+                            <p className="mt-1 text-xs text-gray-600">{mediaItem.description}</p>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  }
+                  return null
+                })()}
 
                 {/* Modal Content */}
                 <div className="p-6 space-y-6">
@@ -146,11 +227,19 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
                     )}
                   </div>
 
-                  {/* Event Description */}
-                  {event.description && (
+                  {/* Show content only if no PDF media */}
+                  {!(event.media && event.media.length > 0 && event.media[0]._type === 'file') && event.description && (
                     <div>
                       <h4 className="text-lg font-medium text-gray-900 mb-2">Description</h4>
                       <p className="text-gray-700 leading-relaxed">{event.description}</p>
+                    </div>
+                  )}
+
+                  {/* Show compact content for PDF events */}
+                  {event.media && event.media.length > 0 && event.media[0]._type === 'file' && event.description && (
+                    <div>
+                      <h4 className="text-lg font-medium text-gray-900 mb-2">About this Event</h4>
+                      <p className="text-gray-700 leading-relaxed text-base">{event.description}</p>
                     </div>
                   )}
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Announcement, Region, sanityClient } from '@/lib/sanity'
 import AnnouncementCard from './AnnouncementCard'
+import AnnouncementModal from './AnnouncementModal'
 
 interface AnnouncementsSectionProps {
   regionSlug?: string // If provided, only show announcements for this region
@@ -18,6 +19,8 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedPriority, setSelectedPriority] = useState<string>('all')
   const [loading, setLoading] = useState(true)
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Fetch announcements and regions
   useEffect(() => {
@@ -48,7 +51,15 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
           priority,
           category,
           isPinned,
-          media,
+          media[]{
+            _type,
+            asset->{
+              url,
+              originalFilename
+            },
+            alt,
+            description
+          },
           region->{
             _id,
             name,
@@ -79,6 +90,17 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
 
     fetchData()
   }, [regionSlug, showFilters])
+
+  // Modal handlers
+  const handleAnnouncementClick = (announcement: Announcement) => {
+    setSelectedAnnouncement(announcement)
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    setSelectedAnnouncement(null)
+  }
 
   // Filter announcements based on selected criteria
   const filteredAnnouncements = announcements.filter(announcement => {
@@ -209,7 +231,12 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
               )}
               <div className={compact ? "space-y-3" : "space-y-4"}>
                 {pinnedAnnouncements.map(announcement => (
-                  <AnnouncementCard key={announcement._id} announcement={announcement} compact={compact} />
+                  <AnnouncementCard 
+                    key={announcement._id} 
+                    announcement={announcement} 
+                    compact={compact}
+                    onClick={() => handleAnnouncementClick(announcement)}
+                  />
                 ))}
               </div>
             </div>
@@ -223,7 +250,12 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
               )}
               <div className={compact ? "space-y-3" : "space-y-4"}>
                 {regularAnnouncements.map(announcement => (
-                  <AnnouncementCard key={announcement._id} announcement={announcement} compact={compact} />
+                  <AnnouncementCard 
+                    key={announcement._id} 
+                    announcement={announcement} 
+                    compact={compact}
+                    onClick={() => handleAnnouncementClick(announcement)}
+                  />
                 ))}
               </div>
             </div>
@@ -240,6 +272,13 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
           </p>
         </div>
       )}
+
+      {/* Announcement Modal */}
+      <AnnouncementModal 
+        announcement={selectedAnnouncement}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+      />
     </div>
   )
 }

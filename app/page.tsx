@@ -10,7 +10,7 @@ import { createClient } from 'next-sanity'
 // Create a more reliable client for server-side rendering
 const client = createClient({
   projectId: 'h3prmcr9',
-  dataset: 'production',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2023-12-01',
   useCdn: false, // Disable CDN for fresh data
 })

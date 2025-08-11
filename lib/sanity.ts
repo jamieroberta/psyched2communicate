@@ -3,7 +3,7 @@ import imageUrlBuilder from '@sanity/image-url'
 
 const config = {
   projectId: 'h3prmcr9',
-  dataset: 'production',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2023-12-01',
   useCdn: false, // Disable CDN temporarily for debugging
 }
@@ -14,22 +14,22 @@ const builder = imageUrlBuilder(sanityClient)
 
 export const urlFor = (source: any) => builder.image(source)
 
-// Helper functions for new media field format
+// Helper functions for media field format
 export const getMediaUrl = (mediaField?: MediaField[]): string | null => {
   if (!mediaField || !mediaField[0]) return null
   
   const media = mediaField[0]
-  if (media.mediaType === 'image' && media.image) {
-    return urlFor(media.image).url()
-  } else if (media.mediaType === 'pdf' && media.pdf) {
-    return media.pdf.asset.url
+  if (media._type === 'image') {
+    return urlFor(media).url()
+  } else if (media._type === 'file') {
+    return media.asset?.url || null
   }
   return null
 }
 
-export const getMediaType = (mediaField?: MediaField[]): 'image' | 'pdf' | null => {
+export const getMediaType = (mediaField?: MediaField[]): 'image' | 'file' | null => {
   if (!mediaField || !mediaField[0]) return null
-  return mediaField[0].mediaType || null
+  return mediaField[0]._type || null
 }
 
 export const getMediaAlt = (mediaField?: MediaField[]): string => {
@@ -42,7 +42,7 @@ export const isImage = (mediaField?: MediaField[]): boolean => {
 }
 
 export const isPDF = (mediaField?: MediaField[]): boolean => {
-  return getMediaType(mediaField) === 'pdf'
+  return getMediaType(mediaField) === 'file'
 }
 
 // Types for our content
@@ -81,9 +81,11 @@ export interface Page {
 }
 
 export interface MediaField {
-  mediaType?: 'image' | 'pdf'
-  image?: any
-  pdf?: any
+  _type: 'image' | 'file'
+  asset?: {
+    url: string
+    originalFilename?: string
+  }
   alt?: string
   description?: string
 }
@@ -161,4 +163,55 @@ export interface JobListing {
   applicationLink: string
   postedDate: string
   isActive: boolean
+}
+
+// Page queries
+export async function getNavigationPages(): Promise<Page[]> {
+  const query = `*[_type == "page" && showOnNavigation == true] | order(title asc) {
+    _id,
+    title,
+    slug,
+    showOnNavigation
+  }`
+  
+  try {
+    return await sanityClient.fetch(query)
+  } catch (error) {
+    console.error('Error fetching navigation pages:', error)
+    return []
+  }
+}
+
+export async function getAllPages(): Promise<Page[]> {
+  const query = `*[_type == "page"] | order(title asc) {
+    _id,
+    title,
+    slug,
+    content,
+    showOnNavigation
+  }`
+  
+  try {
+    return await sanityClient.fetch(query)
+  } catch (error) {
+    console.error('Error fetching all pages:', error)
+    return []
+  }
+}
+
+export async function getPageBySlug(slug: string): Promise<Page | null> {
+  const query = `*[_type == "page" && slug.current == $slug][0] {
+    _id,
+    title,
+    slug,
+    content,
+    showOnNavigation
+  }`
+  
+  try {
+    return await sanityClient.fetch(query, { slug })
+  } catch (error) {
+    console.error('Error fetching page by slug:', error)
+    return null
+  }
 }

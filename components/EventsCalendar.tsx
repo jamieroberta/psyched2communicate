@@ -57,7 +57,15 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
           category,
           registrationRequired,
           registrationLink,
-          media,
+          media[]{
+            _type,
+            asset->{
+              url,
+              originalFilename
+            },
+            alt,
+            description
+          },
           region->{
             _id,
             name,

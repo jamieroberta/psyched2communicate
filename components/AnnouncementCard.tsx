@@ -7,9 +7,10 @@ interface AnnouncementCardProps {
   announcement: Announcement
   showFullContent?: boolean
   compact?: boolean
+  onClick?: () => void
 }
 
-export default function AnnouncementCard({ announcement, showFullContent = false, compact = false }: AnnouncementCardProps) {
+export default function AnnouncementCard({ announcement, showFullContent = false, compact = false, onClick }: AnnouncementCardProps) {
   const publishedDate = new Date(announcement.publishedAt)
   const isExpired = announcement.expiresAt ? new Date(announcement.expiresAt) < new Date() : false
 
@@ -82,7 +83,7 @@ export default function AnnouncementCard({ announcement, showFullContent = false
             <div className={`flex items-center gap-1 ${compact ? 'mb-2' : 'mb-3'} ${compact ? 'flex-wrap' : ''}`}>
               <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(announcement.priority)}`}>
                 {getCategoryIcon(announcement.category)}
-                {compact ? announcement.category.charAt(0).toUpperCase() : announcement.category.charAt(0).toUpperCase() + announcement.category.slice(1)}
+                {announcement.category.charAt(0).toUpperCase() + announcement.category.slice(1)}
               </span>
               {announcement.isPinned && compact && (
                 <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -144,21 +145,17 @@ export default function AnnouncementCard({ announcement, showFullContent = false
             )}
           </div>
           
-          {!showFullContent && (
-            <Link 
-              href={`/announcements/${announcement.slug.current}`}
-              className={`text-blue-600 hover:text-blue-800 font-medium ${compact ? 'text-xs' : ''}`}
+          {!showFullContent && onClick && (
+            <button
+              onClick={onClick}
+              className={`text-blue-600 hover:text-blue-800 font-medium ${compact ? 'text-xs' : ''} cursor-pointer`}
             >
               {compact ? 'Read →' : 'Read More →'}
-            </Link>
+            </button>
           )}
         </div>
 
-        {announcement.expiresAt && (
-          <div className="mt-3 pt-3 border-t text-xs text-gray-500">
-            Expires: {new Date(announcement.expiresAt).toLocaleDateString()}
-          </div>
-        )}
+
       </div>
     </div>
   )

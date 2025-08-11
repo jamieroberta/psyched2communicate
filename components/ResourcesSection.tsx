@@ -7,7 +7,7 @@ import { createClient } from 'next-sanity'
 // Create a reliable client for the component
 const client = createClient({
   projectId: 'h3prmcr9',
-  dataset: 'production',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2023-12-01',
   useCdn: false,
 })
