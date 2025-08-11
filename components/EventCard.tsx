@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Event, urlFor } from '@/lib/sanity'
+import { trackEvent } from '@/components/GoogleAnalytics'
 
 interface EventCardProps {
   event: Event
@@ -42,10 +43,26 @@ export default function EventCard({ event, onClick }: EventCardProps) {
     return colors[category as keyof typeof colors] || colors.other
   }
 
+  const handleEventClick = () => {
+    // Track event card click
+    trackEvent('view_event_details', 'event_engagement', `${event.category}: ${event.title}`)
+    if (onClick) onClick()
+  }
+
+  const handleMeetingJoin = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent event card click
+    trackEvent('join_virtual_meeting', 'event_engagement', `${event.category}: ${event.title}`)
+  }
+
+  const handleRegistration = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent event card click
+    trackEvent('start_event_registration', 'event_engagement', `${event.category}: ${event.title}`)
+  }
+
   return (
     <div 
       className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer ${isPast ? 'opacity-75' : ''} ${onClick ? 'hover:scale-105' : ''}`}
-      onClick={onClick}
+      onClick={handleEventClick}
     >
       {event.image && (
         <div className="relative h-48 w-full">
@@ -123,6 +140,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+              onClick={handleMeetingJoin}
             >
               <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
@@ -137,6 +155,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
+              onClick={handleRegistration}
             >
               Register
             </a>

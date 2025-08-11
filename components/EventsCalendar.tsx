@@ -5,6 +5,7 @@ import { Event, Region, sanityClient } from '@/lib/sanity'
 import EventCard from './EventCard'
 import MonthlyCalendar from './MonthlyCalendar'
 import EventModal from './EventModal'
+import { trackEvent } from '@/components/GoogleAnalytics'
 
 interface EventsCalendarProps {
   regionSlug?: string // If provided, only show events for this region
@@ -152,7 +153,10 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
           {/* Display Mode Toggle */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setDisplayMode('calendar')}
+              onClick={() => {
+                setDisplayMode('calendar')
+                trackEvent('change_view_mode', 'calendar_interaction', 'calendar_view')
+              }}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                 displayMode === 'calendar'
                   ? 'bg-blue-600 text-white'
@@ -162,7 +166,10 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
               Calendar
             </button>
             <button
-              onClick={() => setDisplayMode('list')}
+              onClick={() => {
+                setDisplayMode('list')
+                trackEvent('change_view_mode', 'calendar_interaction', 'list_view')
+              }}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                 displayMode === 'list'
                   ? 'bg-blue-600 text-white'
@@ -189,7 +196,11 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
               <label className="text-sm font-medium text-gray-700">View:</label>
               <select
                 value={viewType}
-                onChange={(e) => setViewType(e.target.value as typeof viewType)}
+                onChange={(e) => {
+                  const newViewType = e.target.value as typeof viewType
+                  setViewType(newViewType)
+                  trackEvent('filter_events', 'calendar_interaction', `view_type_${newViewType}`)
+                }}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="upcoming">Upcoming</option>
@@ -205,7 +216,10 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
               <label className="text-sm font-medium text-gray-700">Region:</label>
               <select
                 value={selectedRegion}
-                onChange={(e) => setSelectedRegion(e.target.value)}
+                onChange={(e) => {
+                  setSelectedRegion(e.target.value)
+                  trackEvent('filter_events', 'calendar_interaction', `region_${e.target.value}`)
+                }}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Regions</option>
@@ -224,7 +238,10 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
             <label className="text-sm font-medium text-gray-700">Category:</label>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value)
+                trackEvent('filter_events', 'calendar_interaction', `category_${e.target.value}`)
+              }}
               className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Categories</option>

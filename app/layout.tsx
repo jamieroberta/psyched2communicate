@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { GoogleAnalytics } from '@/components/GoogleAnalytics'
+import CookieConsent from '@/components/CookieConsent'
 import { sanityClient, urlFor, SiteSettings, getMediaUrl, isImage } from '@/lib/sanity'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -52,11 +54,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} min-h-screen flex flex-col bg-gray-50`}>
+        <GoogleAnalytics />
         <Header />
         <main className="flex-grow">
           {children}
         </main>
         <Footer />
+        <CookieConsent />
       </body>
     </html>
   )
