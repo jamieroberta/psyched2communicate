@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 // Google Analytics tracking ID - you'll need to replace this with your actual GA4 measurement ID
@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-export function GoogleAnalytics() {
+function GoogleAnalyticsInner() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -53,8 +53,8 @@ export function GoogleAnalytics() {
 
     return () => {
       // Cleanup scripts if component unmounts
-      document.head.removeChild(script1)
-      document.head.removeChild(script2)
+      if (script1.parentNode) document.head.removeChild(script1)
+      if (script2.parentNode) document.head.removeChild(script2)
     }
   }, [])
 
@@ -76,6 +76,14 @@ export function GoogleAnalytics() {
   }, [pathname, searchParams])
 
   return null
+}
+
+export function GoogleAnalytics() {
+  return (
+    <Suspense fallback={null}>
+      <GoogleAnalyticsInner />
+    </Suspense>
+  )
 }
 
 // Analytics helper functions for custom event tracking
