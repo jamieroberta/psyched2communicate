@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { sanityClient, urlFor, Region, Consultant, getMediaUrl } from '@/lib/sanity'
 import MediaDisplay from '@/components/MediaDisplay'
-import Image from 'next/image'
 import EventsCalendar from '@/components/EventsCalendar'
 import AnnouncementsSection from '@/components/AnnouncementsSection'
 import ResourcesSection from '@/components/ResourcesSection'
@@ -80,7 +79,8 @@ const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
   
   console.log('Fetching consultants for region:', actualSlug)
   const result = await sanityClient.fetch(query, { slug: actualSlug })
-  console.log('Consultants found:', result.length, result.map(c => ({ name: c.name, isActive: c.isActive, displayOrder: c.displayOrder })))
+  console.log('Consultants found:', result.length, result.map((c: Consultant) => ({ name: c.name, isActive: c.isActive, displayOrder: c.displayOrder })))
+  console.log('Full consultant data:', JSON.stringify(result, null, 2))
   
   // Debug: Check all consultants for this region (including inactive ones)
   const debugQuery = `*[_type == "consultant" && region->slug.current == $slug] {
@@ -104,6 +104,9 @@ export default async function RegionPage({ params }: { params: { slug: string } 
   }
 
   const consultants = await getConsultantsByRegion(params.slug)
+  
+  console.log('In RegionPage component - consultants:', consultants.length)
+  console.log('Consultant names:', consultants.map(c => c.name))
 
   // Generate dynamic colors based on region color
   const regionColor = region.color || '#3B82F6' // Default to blue
@@ -180,13 +183,22 @@ export default async function RegionPage({ params }: { params: { slug: string } 
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0">
-                        <Image
-                          src={urlFor(consultant.image).width(80).height(80).url()}
-                          alt={consultant.name}
-                          width={80}
-                          height={80}
-                          className="rounded-lg object-cover"
-                        />
+                        {consultant.image && consultant.image.length > 0 ? (
+                          <MediaDisplay
+                            media={consultant.image}
+                            width={80}
+                            height={80}
+                            alt={consultant.name}
+                            className="rounded-lg object-cover"
+                            showDownloadLink={false}
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">
