@@ -1,16 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Resource } from '@/lib/sanity'
-import { createClient } from 'next-sanity'
-
-// Create a reliable client for the component
-const client = createClient({
-  projectId: 'h3prmcr9',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2023-12-01',
-  useCdn: false,
-})
+import { sanityClient, Resource } from '@/lib/sanity'
 
 interface ResourcesSectionProps {
   compact?: boolean // Whether to use compact styling for sidebar
@@ -62,7 +53,7 @@ export default function ResourcesSection({ compact = false, regionSlug }: Resour
         }
 
         console.log('Fetching resources...', regionSlug ? `for region: ${regionSlug}` : 'for home page')
-        const resourcesData = await client.fetch(query)
+        const resourcesData = await sanityClient.fetch(query)
         console.log('Resources fetched:', resourcesData)
         setResources(resourcesData || [])
       } catch (error) {

@@ -5,7 +5,7 @@ const config = {
   projectId: 'h3prmcr9',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2023-12-01',
-  useCdn: false, // Disable CDN temporarily for debugging
+  useCdn: true, // Enable CDN for better performance in production
 }
 
 export const sanityClient = createClient(config)

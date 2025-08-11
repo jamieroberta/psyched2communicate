@@ -97,13 +97,14 @@ const getConsultantsByRegion = async (slug: string): Promise<Consultant[]> => {
 }
 
 export default async function RegionPage({ params }: { params: { slug: string } }) {
-  const region = await getRegionBySlug(params.slug)
-  
-  if (!region) {
-    notFound()
-  }
+  try {
+    const region = await getRegionBySlug(params.slug)
+    
+    if (!region) {
+      notFound()
+    }
 
-  const consultants = await getConsultantsByRegion(params.slug)
+    const consultants = await getConsultantsByRegion(params.slug)
   
   console.log('In RegionPage component - consultants:', consultants.length)
   console.log('Consultant names:', consultants.map(c => c.name))
@@ -332,4 +333,43 @@ export default async function RegionPage({ params }: { params: { slug: string } 
       </div>
     </div>
   )
+  } catch (error) {
+    console.error('Error rendering region page:', error)
+    // Return a user-friendly error page instead of throwing
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <div className="container py-12">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-red-600 to-red-500 px-8 py-6">
+                <h1 className="text-3xl lg:text-4xl font-bold text-white">Region Unavailable</h1>
+              </div>
+              <div className="px-8 py-12">
+                <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                  We're having trouble loading information for this region right now.
+                </p>
+                <p className="text-gray-500 mb-8">
+                  Please try again later or contact support if the problem persists.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <a 
+                    href="/regions" 
+                    className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    View All Regions
+                  </a>
+                  <a 
+                    href="/" 
+                    className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Go Home
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
