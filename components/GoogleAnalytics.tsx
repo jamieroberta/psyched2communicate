@@ -3,8 +3,8 @@
 import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
-// Google Analytics tracking ID - you'll need to replace this with your actual GA4 measurement ID
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+// Google Analytics tracking ID for psyched2communicate.com
+const GA_MEASUREMENT_ID = 'G-23J0GKYCYG'
 
 declare global {
   interface Window {

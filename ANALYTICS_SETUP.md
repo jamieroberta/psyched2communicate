@@ -8,27 +8,13 @@
 2. Create a new property for `psyched2communicate.com`
 3. Copy your **Measurement ID** (format: `G-XXXXXXXXXX`)
 
-### 2. Add Environment Variable
+### 2. Google Analytics ID Configuration
 
-Create or update your `.env.local` file with:
+Your Google Analytics 4 Measurement ID (`G-23J0GKYCYG`) is already hardcoded in the application for psyched2communicate.com.
 
-```bash
-# Add this line to your .env.local file
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-23J0GKYCYG
-```
+### 3. Deploy to Production
 
-Your Google Analytics 4 Measurement ID is: `G-23J0GKYCYG`
-
-### 3. Deploy with Environment Variables
-
-#### For Vercel:
-1. Go to your Vercel project dashboard
-2. Navigate to Settings → Environment Variables
-3. Add: `NEXT_PUBLIC_GA_MEASUREMENT_ID` with your GA4 ID
-4. Redeploy your site
-
-#### For other platforms:
-Make sure to set the `NEXT_PUBLIC_GA_MEASUREMENT_ID` environment variable in your deployment environment.
+Simply deploy your site to Vercel or your hosting platform - no additional configuration needed!
 
 ## 📊 What's Tracked Automatically
 
