@@ -64,10 +64,10 @@ export default function EventCard({ event, onClick }: EventCardProps) {
       className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer ${isPast ? 'opacity-75' : ''} ${onClick ? 'hover:scale-105' : ''}`}
       onClick={handleEventClick}
     >
-      {event.image && (
+      {event.media && event.media[0] && event.media[0]._type === 'image' && (
         <div className="relative h-48 w-full">
           <Image
-            src={urlFor(event.image).width(400).height(200).url()}
+            src={urlFor(event.media[0]).width(400).height(200).url()}
             alt={event.title}
             fill
             className="object-cover rounded-t-lg"
@@ -85,6 +85,14 @@ export default function EventCard({ event, onClick }: EventCardProps) {
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(event.category)}`}>
                 {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
               </span>
+              {event.isRecurring && (
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  {event.recurrencePattern?.charAt(0).toUpperCase() + event.recurrencePattern?.slice(1)}
+                </span>
+              )}
               {isUpcoming && (
                 <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   Upcoming

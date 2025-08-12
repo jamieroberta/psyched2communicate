@@ -104,6 +104,9 @@ export interface Event {
   category: 'training' | 'workshop' | 'meeting' | 'conference' | 'social' | 'other'
   registrationRequired: boolean
   registrationLink?: string
+  isRecurring?: boolean
+  recurrencePattern?: 'weekly' | 'biweekly' | 'monthly'
+  recurrenceEndDate?: string
   media?: MediaField[]
 }
 

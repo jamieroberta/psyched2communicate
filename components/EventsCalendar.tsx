@@ -6,6 +6,7 @@ import EventCard from './EventCard'
 import MonthlyCalendar from './MonthlyCalendar'
 import EventModal from './EventModal'
 import { trackEvent } from '@/components/GoogleAnalytics'
+import { expandRecurringEvents, getRecurringEventsDateRange } from '@/lib/recurringEvents'
 
 interface EventsCalendarProps {
   regionSlug?: string // If provided, only show events for this region
@@ -58,6 +59,9 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
           category,
           registrationRequired,
           registrationLink,
+          isRecurring,
+          recurrencePattern,
+          recurrenceEndDate,
           media[]{
             _type,
             asset->{
@@ -100,30 +104,40 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
     fetchData()
   }, [regionSlug, showFilters])
 
-  // Filter events based on selected criteria
-  const filteredEvents = events.filter(event => {
+  // Generate recurring events and filter based on selected criteria
+  const filteredEvents = (() => {
     const now = new Date()
-    const eventDate = new Date(event.startDate)
     
-    // Filter by view type - only apply in list view
-    if (displayMode === 'list') {
-      if (viewType === 'upcoming' && eventDate < now) return false
-      if (viewType === 'past' && eventDate >= now) return false
-    }
-    // In calendar view, always show all events (no time filtering)
-    
-    // Filter by region (if not region-specific page)
-    // Events without a region are treated as "all regions" and always shown on home page
-    if (!regionSlug && selectedRegion !== 'all') {
-      // Only filter if event has a region and it doesn't match selected region
-      if (event.region && event.region.slug.current !== selectedRegion) return false
-    }
-    
-    // Filter by category
-    if (selectedCategory !== 'all' && event.category !== selectedCategory) return false
-    
-    return true
-  }).slice(0, maxEvents || undefined)
+    // Calculate view range for recurring events (6 months in the past to 12 months in the future)
+    const { viewStartDate, viewEndDate } = getRecurringEventsDateRange(6, 12)
+
+    // Generate all events including recurring instances
+    const allEvents = expandRecurringEvents(events, viewStartDate, viewEndDate)
+
+    // Filter the expanded events
+    return allEvents.filter(event => {
+      const eventDate = new Date(event.startDate)
+      
+      // Filter by view type - only apply in list view
+      if (displayMode === 'list') {
+        if (viewType === 'upcoming' && eventDate < now) return false
+        if (viewType === 'past' && eventDate >= now) return false
+      }
+      // In calendar view, always show all events (no time filtering)
+      
+      // Filter by region (if not region-specific page)
+      // Events without a region are treated as "all regions" and always shown on home page
+      if (!regionSlug && selectedRegion !== 'all') {
+        // Only filter if event has a region and it doesn't match selected region
+        if (event.region && event.region.slug.current !== selectedRegion) return false
+      }
+      
+      // Filter by category
+      if (selectedCategory !== 'all' && event.category !== selectedCategory) return false
+      
+      return true
+    }).slice(0, maxEvents || undefined)
+  })()
 
   if (loading) {
     return (

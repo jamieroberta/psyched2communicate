@@ -92,6 +92,35 @@ export default defineType({
       type: 'url',
       hidden: ({document}) => !document?.registrationRequired,
     }),
+    defineField({
+      name: 'isRecurring',
+      title: 'Recurring Event',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Check this to make the event repeat on a schedule',
+    }),
+    defineField({
+      name: 'recurrencePattern',
+      title: 'Recurrence Pattern',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Weekly', value: 'weekly'},
+          {title: 'Bi-weekly', value: 'biweekly'},
+          {title: 'Monthly', value: 'monthly'},
+        ],
+      },
+      initialValue: 'weekly',
+      hidden: ({document}) => !document?.isRecurring,
+      description: 'How often the event repeats',
+    }),
+    defineField({
+      name: 'recurrenceEndDate',
+      title: 'Recurrence End Date',
+      type: 'date',
+      hidden: ({document}) => !document?.isRecurring,
+      description: 'When to stop repeating the event (optional - leave empty for indefinite)',
+    }),
     simpleMediaField('media', 'Event Image or PDF', {
       description: 'Upload an event image or PDF document (flyer, agenda, etc.)',
       hotspot: true,

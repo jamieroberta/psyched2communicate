@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Event } from '@/lib/sanity'
 import CalendarEvent from './CalendarEvent'
 import EventModal from './EventModal'
+import { expandRecurringEvents } from '@/lib/recurringEvents'
 
 interface MonthlyCalendarProps {
   events: Event[]
@@ -75,16 +76,26 @@ export default function MonthlyCalendar({ events }: MonthlyCalendarProps) {
     })
   }
 
-  // Group events by date
-  const eventsByDate = events.reduce((acc, event) => {
-    const eventDate = new Date(event.startDate)
-    const dateKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`
-    if (!acc[dateKey]) {
-      acc[dateKey] = []
-    }
-    acc[dateKey].push(event)
-    return acc
-  }, {} as Record<string, Event[]>)
+  // Generate recurring events for the current month view and group by date
+  const eventsByDate = (() => {
+    // Calculate the full month view range (including leading/trailing days)
+    const viewStartDate = new Date(year, month - 1, prevMonthDays - trailingDays + 1)
+    const viewEndDate = new Date(year, month + 1, leadingDays)
+
+    // Generate all events including recurring instances for the current view
+    const allEvents = expandRecurringEvents(events, viewStartDate, viewEndDate)
+
+    // Group by date
+    return allEvents.reduce((acc, event) => {
+      const eventDate = new Date(event.startDate)
+      const dateKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`
+      if (!acc[dateKey]) {
+        acc[dateKey] = []
+      }
+      acc[dateKey].push(event)
+      return acc
+    }, {} as Record<string, Event[]>)
+  })()
 
   const getEventsForDay = (date: Date) => {
     const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
