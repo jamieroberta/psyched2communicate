@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Event } from '@/lib/sanity'
 import CalendarEvent from './CalendarEvent'
 import EventModal from './EventModal'
-import { expandRecurringEvents } from '@/lib/recurringEvents'
+import { generateRecurringEvents } from '@/lib/recurringEvents'
 
 interface MonthlyCalendarProps {
   events: Event[]
@@ -35,7 +35,7 @@ export default function MonthlyCalendar({ events }: MonthlyCalendarProps) {
   const daysInMonth = lastDayOfMonth.getDate()
 
   // Calculate previous month's trailing days
-  const prevMonth = new Date(year, month - 1, 0)
+  const prevMonth = new Date(year, month, 0) // Last day of previous month (correct month)
   const prevMonthDays = prevMonth.getDate()
   const trailingDays = firstDayOfWeek
 
@@ -76,14 +76,26 @@ export default function MonthlyCalendar({ events }: MonthlyCalendarProps) {
     })
   }
 
-  // Generate recurring events for the current month view and group by date
+  // Generate recurring events dynamically for the current month view
   const eventsByDate = (() => {
-    // Calculate the full month view range (including leading/trailing days)
+    // Calculate the full month view range (including leading/trailing days from adjacent months)
     const viewStartDate = new Date(year, month - 1, prevMonthDays - trailingDays + 1)
     const viewEndDate = new Date(year, month + 1, leadingDays)
 
-    // Generate all events including recurring instances for the current view
-    const allEvents = expandRecurringEvents(events, viewStartDate, viewEndDate)
+    // Generate all events including recurring instances for this specific month view
+    const allEvents = events.flatMap(event => {
+      if (event.isRecurring) {
+        // For recurring events, generate instances only for this month view
+        return generateRecurringEvents(event, viewStartDate, viewEndDate)
+      } else {
+        // For non-recurring events, include only if they fall within this month view
+        const eventDate = new Date(event.startDate)
+        if (eventDate >= viewStartDate && eventDate <= viewEndDate) {
+          return [event]
+        }
+        return []
+      }
+    })
 
     // Group by date
     return allEvents.reduce((acc, event) => {

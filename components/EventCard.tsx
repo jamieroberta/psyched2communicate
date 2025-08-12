@@ -31,6 +31,47 @@ export default function EventCard({ event, onClick }: EventCardProps) {
     })
   }
 
+  const getDayOfWeek = (date: Date) => {
+    return date.toLocaleDateString('en-US', { weekday: 'long' })
+  }
+
+  const getRecurrenceDescription = (event: Event) => {
+    if (!event.isRecurring || !event.recurrencePattern) return null
+
+    const startDate = new Date(event.startDate)
+    const dayOfWeek = getDayOfWeek(startDate)
+    const time = formatTime(startDate)
+    const startDateFormatted = formatDate(startDate)
+    const endDateFormatted = event.recurrenceEndDate 
+      ? formatDate(new Date(event.recurrenceEndDate))
+      : null
+
+    let pattern = ''
+    switch (event.recurrencePattern) {
+      case 'weekly':
+        pattern = `Every ${dayOfWeek}`
+        break
+      case 'biweekly':
+        pattern = `Every other ${dayOfWeek}`
+        break
+      case 'monthly':
+        const dayOfMonth = startDate.getDate()
+        const suffix = dayOfMonth === 1 ? 'st' : dayOfMonth === 2 ? 'nd' : dayOfMonth === 3 ? 'rd' : 'th'
+        pattern = `Monthly on the ${dayOfMonth}${suffix}`
+        break
+    }
+
+    const timeAndDuration = endDate && endDate.toDateString() === startDate.toDateString() 
+      ? `${time} - ${formatTime(endDate)}`
+      : `${time}`
+
+    const dateRange = endDateFormatted 
+      ? `from ${startDateFormatted} to ${endDateFormatted}`
+      : `starting ${startDateFormatted}`
+
+    return `${pattern} at ${timeAndDuration}, ${dateRange}`
+  }
+
   const getCategoryColor = (category: string) => {
     const colors = {
       training: 'bg-blue-100 text-blue-800',
@@ -93,15 +134,31 @@ export default function EventCard({ event, onClick }: EventCardProps) {
                   {event.recurrencePattern?.charAt(0).toUpperCase() + event.recurrencePattern?.slice(1)}
                 </span>
               )}
-              {isUpcoming && (
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Upcoming
-                </span>
-              )}
-              {isPast && (
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                  Past Event
-                </span>
+              {event.isRecurring ? (
+                // For recurring events, show status based on recurrence end date
+                event.recurrenceEndDate && new Date(event.recurrenceEndDate) < new Date() ? (
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    Ended
+                  </span>
+                ) : (
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Recurring
+                  </span>
+                )
+              ) : (
+                // For single events, use original logic
+                <>
+                  {isUpcoming && (
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Upcoming
+                    </span>
+                  )}
+                  {isPast && (
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                      Past Event
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -119,8 +176,12 @@ export default function EventCard({ event, onClick }: EventCardProps) {
               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
             </svg>
             <span>
-              {formatDate(startDate)} at {formatTime(startDate)}
-              {endDate && ` - ${endDate.toDateString() === startDate.toDateString() ? formatTime(endDate) : formatDate(endDate)}`}
+              {event.isRecurring ? getRecurrenceDescription(event) : (
+                <>
+                  {formatDate(startDate)} at {formatTime(startDate)}
+                  {endDate && ` - ${endDate.toDateString() === startDate.toDateString() ? formatTime(endDate) : formatDate(endDate)}`}
+                </>
+              )}
             </span>
           </div>
 

@@ -104,39 +104,69 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
     fetchData()
   }, [regionSlug, showFilters])
 
-  // Generate recurring events and filter based on selected criteria
+  // Filter events based on selected criteria
   const filteredEvents = (() => {
     const now = new Date()
-    
-    // Calculate view range for recurring events (6 months in the past to 12 months in the future)
-    const { viewStartDate, viewEndDate } = getRecurringEventsDateRange(6, 12)
 
-    // Generate all events including recurring instances
-    const allEvents = expandRecurringEvents(events, viewStartDate, viewEndDate)
-
-    // Filter the expanded events
-    return allEvents.filter(event => {
-      const eventDate = new Date(event.startDate)
-      
-      // Filter by view type - only apply in list view
-      if (displayMode === 'list') {
-        if (viewType === 'upcoming' && eventDate < now) return false
-        if (viewType === 'past' && eventDate >= now) return false
-      }
-      // In calendar view, always show all events (no time filtering)
-      
-      // Filter by region (if not region-specific page)
-      // Events without a region are treated as "all regions" and always shown on home page
-      if (!regionSlug && selectedRegion !== 'all') {
-        // Only filter if event has a region and it doesn't match selected region
-        if (event.region && event.region.slug.current !== selectedRegion) return false
-      }
-      
-      // Filter by category
-      if (selectedCategory !== 'all' && event.category !== selectedCategory) return false
-      
-      return true
-    }).slice(0, maxEvents || undefined)
+    // For calendar view, we'll let MonthlyCalendar handle recurring event generation
+    // For list view, we need to generate recurring events here for proper time filtering
+    if (displayMode === 'calendar') {
+      // Just filter base events for calendar view
+      return events.filter(event => {
+        // Filter by region (if not region-specific page)
+        if (!regionSlug && selectedRegion !== 'all') {
+          if (event.region && event.region.slug.current !== selectedRegion) return false
+        }
+        
+        // Filter by category
+        if (selectedCategory !== 'all' && event.category !== selectedCategory) return false
+        
+        return true
+      })
+    } else {
+      // For list view, show base events only (don't expand recurring events)
+      return events.filter(event => {
+        // For recurring events, show them based on their original start date and recurrence logic
+        if (event.isRecurring) {
+          const eventStartDate = new Date(event.startDate)
+          const recurrenceEndDate = event.recurrenceEndDate ? new Date(event.recurrenceEndDate) : null
+          
+          // Filter by view type for recurring events
+          if (viewType === 'upcoming') {
+            // Show if the event is still active or will be active in the future
+            if (recurrenceEndDate && recurrenceEndDate < now) return false
+            // For indefinite recurring events, show them regardless of start date
+            if (!recurrenceEndDate) return true
+            // For events with end date, show if end date is in future
+            if (recurrenceEndDate && recurrenceEndDate >= now) return true
+            return false
+          } else if (viewType === 'past') {
+            // Show if the event has ended or the original start was in the past
+            if (recurrenceEndDate && recurrenceEndDate < now) return true
+            if (!recurrenceEndDate && eventStartDate < now) return false // Still ongoing indefinitely
+            return eventStartDate < now
+          }
+          // For 'all' view, show all recurring events
+          return true
+        } else {
+          // For non-recurring events, use original logic
+          const eventDate = new Date(event.startDate)
+          if (viewType === 'upcoming' && eventDate < now) return false
+          if (viewType === 'past' && eventDate >= now) return false
+          return true
+        }
+      }).filter(event => {
+        // Filter by region (if not region-specific page)
+        if (!regionSlug && selectedRegion !== 'all') {
+          if (event.region && event.region.slug.current !== selectedRegion) return false
+        }
+        
+        // Filter by category
+        if (selectedCategory !== 'all' && event.category !== selectedCategory) return false
+        
+        return true
+      }).slice(0, maxEvents || undefined)
+    }
   })()
 
   if (loading) {

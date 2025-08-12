@@ -18,7 +18,62 @@ export function generateRecurringEvents(baseEvent: Event, viewStartDate: Date, v
   const eventDuration = endDate ? endDate.getTime() - startDate.getTime() : 0
   const recurrenceEndDate = baseEvent.recurrenceEndDate ? new Date(baseEvent.recurrenceEndDate) : null
 
+  // Start from the original event date and generate all occurrences
   let currentDate = new Date(startDate)
+  let occurrenceIndex = 0
+
+  // Optimize: if the start date is way before the view range, skip ahead
+  if (currentDate < viewStartDate) {
+    switch (baseEvent.recurrencePattern) {
+      case 'weekly': {
+        const daysDiff = Math.floor((viewStartDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24))
+        const weeksDiff = Math.floor(daysDiff / 7)
+        currentDate = new Date(currentDate.getTime() + (weeksDiff * 7 * 24 * 60 * 60 * 1000))
+        occurrenceIndex = weeksDiff
+        break
+      }
+      case 'biweekly': {
+        const daysDiff = Math.floor((viewStartDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24))
+        const biweeksDiff = Math.floor(daysDiff / 14)
+        currentDate = new Date(currentDate.getTime() + (biweeksDiff * 14 * 24 * 60 * 60 * 1000))
+        occurrenceIndex = biweeksDiff
+        break
+      }
+      case 'monthly': {
+        const originalStartDate = new Date(baseEvent.startDate)
+        const targetDay = originalStartDate.getDate()
+        const targetTime = {
+          hours: originalStartDate.getHours(),
+          minutes: originalStartDate.getMinutes(),
+          seconds: originalStartDate.getSeconds(),
+          milliseconds: originalStartDate.getMilliseconds()
+        }
+        
+        while (currentDate < viewStartDate && occurrenceIndex < 1000) {
+          // Move to the next month
+          const newYear = currentDate.getFullYear()
+          const newMonth = currentDate.getMonth() + 1
+          
+          // Create the date for the target day in the new month
+          const nextMonthDate = new Date(newYear, newMonth, targetDay, 
+            targetTime.hours, targetTime.minutes, targetTime.seconds, targetTime.milliseconds)
+          
+          // If the date is invalid (e.g., Feb 31 becomes Mar 3), adjust to the last day of the target month
+          if (nextMonthDate.getMonth() !== (newMonth % 12)) {
+            // The date rolled over, so use the last day of the intended month
+            // To get last day of month X, we use new Date(year, X+1, 0)
+            currentDate.setFullYear(newYear, newMonth + 1, 0) // Last day of target month
+            currentDate.setHours(targetTime.hours, targetTime.minutes, targetTime.seconds, targetTime.milliseconds)
+          } else {
+            currentDate.setTime(nextMonthDate.getTime())
+          }
+          
+          occurrenceIndex++
+        }
+        break
+      }
+    }
+  }
 
   // Generate occurrences within the view range
   while (currentDate <= viewEndDate) {
@@ -27,29 +82,66 @@ export function generateRecurringEvents(baseEvent: Event, viewStartDate: Date, v
       break
     }
 
-    // Only include events that are within or overlap with our view range
-    if (currentDate >= viewStartDate && currentDate <= viewEndDate) {
+    // Only include events that are within our view range
+    if (currentDate >= viewStartDate) {
       const eventEndDate = eventDuration > 0 ? new Date(currentDate.getTime() + eventDuration) : null
       
       events.push({
         ...baseEvent,
-        _id: `${baseEvent._id}-${currentDate.toISOString()}`,
+        _id: `${baseEvent._id}-occurrence-${occurrenceIndex}`, // Use occurrence index for unique ID
         startDate: currentDate.toISOString(),
         endDate: eventEndDate ? eventEndDate.toISOString() : baseEvent.endDate,
       })
     }
 
     // Calculate next occurrence based on pattern
+    const nextDate = new Date(currentDate)
     switch (baseEvent.recurrencePattern) {
       case 'weekly':
-        currentDate.setDate(currentDate.getDate() + 7)
+        nextDate.setDate(nextDate.getDate() + 7)
         break
       case 'biweekly':
-        currentDate.setDate(currentDate.getDate() + 14)
+        nextDate.setDate(nextDate.getDate() + 14)
         break
-      case 'monthly':
-        currentDate.setMonth(currentDate.getMonth() + 1)
+      case 'monthly': {
+        // For monthly events, create a new date with the same day of month in the next month
+        const originalStartDate = new Date(baseEvent.startDate)
+        const targetDay = originalStartDate.getDate()
+        const targetTime = {
+          hours: originalStartDate.getHours(),
+          minutes: originalStartDate.getMinutes(),
+          seconds: originalStartDate.getSeconds(),
+          milliseconds: originalStartDate.getMilliseconds()
+        }
+        
+        // Move to the next month
+        const newYear = nextDate.getFullYear()
+        const newMonth = nextDate.getMonth() + 1
+        
+        // Create the date for the target day in the new month
+        const nextMonthDate = new Date(newYear, newMonth, targetDay, 
+          targetTime.hours, targetTime.minutes, targetTime.seconds, targetTime.milliseconds)
+        
+        // If the date is invalid (e.g., Feb 31 becomes Mar 3), adjust to the last day of the target month
+        if (nextMonthDate.getMonth() !== (newMonth % 12)) {
+          // The date rolled over, so use the last day of the intended month
+          // To get last day of month X, we use new Date(year, X+1, 0)
+          nextDate.setFullYear(newYear, newMonth + 1, 0) // Last day of target month
+          nextDate.setHours(targetTime.hours, targetTime.minutes, targetTime.seconds, targetTime.milliseconds)
+        } else {
+          nextDate.setTime(nextMonthDate.getTime())
+        }
         break
+      }
+    }
+    
+    currentDate = nextDate
+    occurrenceIndex++
+
+    // Safety check to prevent infinite loops
+    if (occurrenceIndex > 1000) {
+      console.warn('Recurring event generation stopped at 1000 occurrences to prevent infinite loop')
+      break
     }
   }
 
