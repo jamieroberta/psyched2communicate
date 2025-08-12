@@ -113,12 +113,10 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
     // In calendar view, always show all events (no time filtering)
     
     // Filter by region (if not region-specific page)
+    // Events without a region are treated as "all regions" and always shown on home page
     if (!regionSlug && selectedRegion !== 'all') {
-      if (selectedRegion === 'no-region') {
-        if (event.region) return false
-      } else {
-        if (!event.region || event.region.slug.current !== selectedRegion) return false
-      }
+      // Only filter if event has a region and it doesn't match selected region
+      if (event.region && event.region.slug.current !== selectedRegion) return false
     }
     
     // Filter by category
@@ -223,7 +221,6 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Regions</option>
-                <option value="no-region">No Region</option>
                 {regions.map(region => (
                   <option key={region._id} value={region.slug.current}>
                     {region.name}

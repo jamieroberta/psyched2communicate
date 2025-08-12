@@ -236,8 +236,8 @@ export default function AnnouncementModal({ announcement, isOpen, onClose }: Ann
                         {announcement.region.name}
                       </span>
                     ) : (
-                      <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                        Home Page
+                      <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-600 border border-blue-200">
+                        All Regions
                       </span>
                     )}
                     

@@ -105,8 +105,10 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
   // Filter announcements based on selected criteria
   const filteredAnnouncements = announcements.filter(announcement => {
     // Filter by region (if not region-specific page)
+    // Announcements without a region are treated as "all regions" and always shown on home page
     if (!regionSlug && selectedRegion !== 'all') {
-      if (announcement.region.slug.current !== selectedRegion) return false
+      // Only filter if announcement has a region and it doesn't match selected region
+      if (announcement.region && announcement.region.slug.current !== selectedRegion) return false
     }
     
     // Filter by category
