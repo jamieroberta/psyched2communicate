@@ -33,7 +33,8 @@ export default function AnnouncementsSection({ regionSlug, showFilters = true, m
         
         // Filter by region if specified
         if (regionSlug) {
-          announcementsQuery += ` && region->slug.current == "${regionSlug}"`
+          // For region pages, show announcements for that region AND announcements with no region (null region = "all regions")
+          announcementsQuery += ` && (region->slug.current == "${regionSlug}" || !defined(region))`
         }
         
         // Filter out expired announcements

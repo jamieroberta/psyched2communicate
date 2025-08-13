@@ -44,7 +44,8 @@ export default function EventsCalendar({ regionSlug, showFilters = true, maxEven
         // Build events query
         let eventsQuery = `*[_type == "event"`
         if (regionSlug) {
-          eventsQuery += ` && region->slug.current == "${regionSlug}"`
+          // For region pages, show events for that region AND events with no region (null region = "all regions")
+          eventsQuery += ` && (region->slug.current == "${regionSlug}" || !defined(region))`
         }
         eventsQuery += `] | order(startDate asc) {
           _id,

@@ -21,8 +21,8 @@ export default function ResourcesSection({ compact = false, regionSlug }: Resour
         // Build query based on region filter
         let query
         if (regionSlug) {
-          // For region pages - get resources for this specific region
-          query = `*[_type == "resource" && isActive == true && region->slug.current == "${regionSlug}"] | order(displayOrder asc, title asc) {
+          // For region pages - get resources for this specific region AND resources with no region (null region = "all regions")
+          query = `*[_type == "resource" && isActive == true && (region->slug.current == "${regionSlug}" || !defined(region))] | order(displayOrder asc, title asc) {
             _id,
             title,
             description,
