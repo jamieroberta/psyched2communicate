@@ -619,6 +619,42 @@
         "type": "url"
       },
       {
+        "initialValue": false,
+        "description": "Check this to make the event repeat on a schedule",
+        "name": "isRecurring",
+        "type": "boolean",
+        "title": "Recurring Event"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Weekly",
+              "value": "weekly"
+            },
+            {
+              "title": "Bi-weekly",
+              "value": "biweekly"
+            },
+            {
+              "title": "Monthly",
+              "value": "monthly"
+            }
+          ]
+        },
+        "initialValue": "weekly",
+        "description": "How often the event repeats",
+        "hidden": "conditional",
+        "name": "recurrencePattern",
+        "type": "string"
+      },
+      {
+        "description": "When to stop repeating the event (optional - leave empty for indefinite)",
+        "hidden": "conditional",
+        "name": "recurrenceEndDate",
+        "type": "date"
+      },
+      {
         "validation": [
           {
             "rules": [
@@ -851,17 +887,7 @@
         "title": "Expires Date"
       },
       {
-        "validation": [
-          {
-            "rules": [
-              {
-                "flag": "presence",
-                "constraint": "required"
-              }
-            ],
-            "level": "error"
-          }
-        ],
+        "description": "Select a region for this announcement. If no region is selected, the announcement will display on the home page.",
         "to": [
           {
             "type": "region"
@@ -1557,7 +1583,7 @@
         "type": "url"
       },
       {
-        "initialValue": "2025-08-08",
+        "initialValue": "2025-08-12",
         "validation": [
           {
             "rules": [
