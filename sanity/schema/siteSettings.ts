@@ -7,7 +7,7 @@ export default defineType({
   type: 'document',
   fields: [
     simpleMediaField('siteLogo', 'Site Logo', {
-      description: 'Logo that appears in the top-left corner of the navigation bar. For best results, upload a square image (1:1 aspect ratio) at least 200x200 pixels, or your organization\'s brand document.',
+      description: 'Logo that appears in the top-left corner of the navigation bar. For best results, upload a square image (1:1 aspect ratio) at least 200x200 pixels, or your organization\'s brand document (PDF or Word).',
       hotspot: true,
       required: true,
     }),

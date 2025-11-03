@@ -21,7 +21,7 @@ export const getMediaUrl = (mediaField?: MediaField[]): string | null => {
   const media = mediaField[0]
   if (media._type === 'image') {
     return urlFor(media).url()
-  } else if (media._type === 'file') {
+  } else if (media._type === 'file' || media._type === 'pdfFile' || media._type === 'wordFile') {
     return media.asset?.url || null
   }
   return null
@@ -30,6 +30,24 @@ export const getMediaUrl = (mediaField?: MediaField[]): string | null => {
 export const getMediaType = (mediaField?: MediaField[]): 'image' | 'file' | null => {
   if (!mediaField || !mediaField[0]) return null
   return mediaField[0]._type || null
+}
+
+export const getFileType = (mediaField?: MediaField[]): 'pdf' | 'word' | 'unknown' => {
+  if (!mediaField || !mediaField[0]) return 'unknown'
+  
+  const media = mediaField[0]
+  // Check by the specific type name first
+  if (media._type === 'pdfFile') return 'pdf'
+  if (media._type === 'wordFile') return 'word'
+  
+  // Fallback to filename detection for backward compatibility
+  if (media._type === 'file') {
+    const filename = media.asset?.originalFilename?.toLowerCase() || ''
+    if (filename.endsWith('.pdf')) return 'pdf'
+    if (filename.endsWith('.doc') || filename.endsWith('.docx')) return 'word'
+  }
+  
+  return 'unknown'
 }
 
 export const getMediaAlt = (mediaField?: MediaField[]): string => {
@@ -42,7 +60,16 @@ export const isImage = (mediaField?: MediaField[]): boolean => {
 }
 
 export const isPDF = (mediaField?: MediaField[]): boolean => {
-  return getMediaType(mediaField) === 'file'
+  return getFileType(mediaField) === 'pdf'
+}
+
+export const isWord = (mediaField?: MediaField[]): boolean => {
+  return getFileType(mediaField) === 'word'
+}
+
+export const isFile = (mediaField?: MediaField[]): boolean => {
+  const mediaType = getMediaType(mediaField)
+  return mediaType === 'file' || mediaType === 'pdfFile' || mediaType === 'wordFile'
 }
 
 // Types for our content
@@ -81,7 +108,7 @@ export interface Page {
 }
 
 export interface MediaField {
-  _type: 'image' | 'file'
+  _type: 'image' | 'file' | 'pdfFile' | 'wordFile'
   asset?: {
     url: string
     originalFilename?: string

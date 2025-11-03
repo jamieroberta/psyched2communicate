@@ -121,8 +121,8 @@ export default defineType({
       hidden: ({document}) => !document?.isRecurring,
       description: 'When to stop repeating the event (optional - leave empty for indefinite)',
     }),
-    simpleMediaField('media', 'Event Image or PDF', {
-      description: 'Upload an event image or PDF document (flyer, agenda, etc.)',
+    simpleMediaField('media', 'Event Image or Document', {
+      description: 'Upload an event image, PDF document, or Word document (flyer, agenda, etc.)',
       hotspot: true,
     }),
   ],

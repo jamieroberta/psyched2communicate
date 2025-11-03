@@ -29,7 +29,7 @@ export default defineType({
       rows: 4,
     }),
     simpleMediaField('logo', 'Region Logo or Document', {
-      description: 'Upload a region logo image or identifying document',
+      description: 'Upload a region logo image, PDF document, or Word document',
       hotspot: true,
     }),
     defineField({

@@ -20,6 +20,7 @@ export const mediaField = (name: string, title: string, options: {
           list: [
             { title: 'Image', value: 'image' },
             { title: 'PDF Document', value: 'pdf' },
+            { title: 'Word Document', value: 'word' },
           ],
         },
         initialValue: 'image',
@@ -33,9 +34,9 @@ export const mediaField = (name: string, title: string, options: {
           hotspot: options.hotspot !== false,
           accept: 'image/*',
         },
-        hidden: ({ parent }) => parent?.mediaType !== 'image',
+        hidden: ({ parent }: any) => parent?.mediaType !== 'image',
         validation: (Rule) => 
-          Rule.custom((value, context) => {
+          Rule.custom((value, context: any) => {
             if (context?.parent?.mediaType === 'image' && options.required && !value) {
               return 'Image is required when media type is Image'
             }
@@ -49,11 +50,27 @@ export const mediaField = (name: string, title: string, options: {
         options: {
           accept: '.pdf',
         },
-        hidden: ({ parent }) => parent?.mediaType !== 'pdf',
+        hidden: ({ parent }: any) => parent?.mediaType !== 'pdf',
         validation: (Rule) => 
-          Rule.custom((value, context) => {
+          Rule.custom((value, context: any) => {
             if (context?.parent?.mediaType === 'pdf' && options.required && !value) {
               return 'PDF file is required when media type is PDF Document'
+            }
+            return true
+          }),
+      }),
+      defineField({
+        name: 'word',
+        title: 'Word Document',
+        type: 'file',
+        options: {
+          accept: '.doc,.docx',
+        },
+        hidden: ({ parent }: any) => parent?.mediaType !== 'word',
+        validation: (Rule) => 
+          Rule.custom((value, context: any) => {
+            if (context?.parent?.mediaType === 'word' && options.required && !value) {
+              return 'Word document is required when media type is Word Document'
             }
             return true
           }),
@@ -62,9 +79,9 @@ export const mediaField = (name: string, title: string, options: {
         name: 'alt',
         title: 'Alt Text / Description',
         type: 'string',
-        description: 'Alternative text for images or description for PDFs (for accessibility)',
+        description: 'Alternative text for images or description for PDFs/Word documents (for accessibility)',
         validation: (Rule) => 
-          Rule.custom((value, context) => {
+          Rule.custom((value, context: any) => {
             if (context?.parent?.mediaType === 'image' && !value) {
               return 'Alt text is required for images (accessibility)'
             }
@@ -77,12 +94,15 @@ export const mediaField = (name: string, title: string, options: {
         mediaType: 'mediaType',
         image: 'image',
         pdf: 'pdf.asset.originalFilename',
+        word: 'word.asset.originalFilename',
         alt: 'alt',
       },
-      prepare({ mediaType, image, pdf, alt }) {
+      prepare({ mediaType, image, pdf, word, alt }) {
         return {
           title: alt || 'Media',
-          subtitle: mediaType === 'image' ? '🖼️ Image' : `📄 PDF: ${pdf || 'Uploaded'}`,
+          subtitle: mediaType === 'image' ? '🖼️ Image' : 
+                   mediaType === 'pdf' ? `📄 PDF: ${pdf || 'Uploaded'}` :
+                   mediaType === 'word' ? `📝 Word: ${word || 'Uploaded'}` : 'Media',
           media: mediaType === 'image' ? image : undefined,
         }
       },
@@ -101,7 +121,7 @@ export const simpleMediaField = (name: string, title: string, options: {
     name,
     title,
     type: 'array',
-    description: options.description || 'Upload an image or PDF document',
+    description: options.description || 'Upload an image, PDF, or Word document',
     of: [
       {
         type: 'image',
@@ -121,6 +141,7 @@ export const simpleMediaField = (name: string, title: string, options: {
       },
       {
         type: 'file',
+        name: 'pdfFile',
         title: 'PDF Document',
         options: {
           accept: '.pdf',
@@ -131,6 +152,22 @@ export const simpleMediaField = (name: string, title: string, options: {
             type: 'string',
             title: 'Description',
             description: 'Brief description of the document',
+          },
+        ],
+      },
+      {
+        type: 'file',
+        name: 'wordFile',
+        title: 'Word Document',
+        options: {
+          accept: '.doc,.docx',
+        },
+        fields: [
+          {
+            name: 'description',
+            type: 'string',
+            title: 'Description',
+            description: 'Brief description of the Word document',
           },
         ],
       },

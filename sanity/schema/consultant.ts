@@ -21,7 +21,7 @@ export default defineType({
       validation: (Rule) => Rule.required().max(100),
     }),
     simpleMediaField('image', 'Profile Photo or Document', {
-      description: 'Professional headshot, profile photo, or CV/resume document',
+      description: 'Professional headshot, profile photo, CV/resume PDF, or Word document',
       hotspot: true,
       required: true,
     }),

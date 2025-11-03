@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { MediaField, getMediaUrl, getMediaType, getMediaAlt, isImage, isPDF } from '@/lib/sanity'
+import { MediaField, getMediaUrl, getMediaType, getMediaAlt, getFileType, isImage, isPDF, isWord, isFile } from '@/lib/sanity'
 
 interface MediaDisplayProps {
   media?: MediaField[]
@@ -26,6 +26,7 @@ export default function MediaDisplay({
 
   const mediaUrl = getMediaUrl(media)
   const mediaType = getMediaType(media)
+  const fileType = getFileType(media)
   const mediaAlt = alt || getMediaAlt(media)
 
   if (!mediaUrl) {
@@ -83,6 +84,42 @@ export default function MediaDisplay({
     )
   }
 
+  if (isWord(media)) {
+    return (
+      <div className={`word-display ${className}`}>
+        {/* Word Document Preview/Icon */}
+        <div className="flex flex-col items-center justify-center bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg p-6" style={{ width, height }}>
+          <svg 
+            className="w-16 h-16 text-blue-600 mb-4" 
+            fill="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+            <path d="M15,13H16.5V18H15M10.5,13H12V18H10.5M13,13H14.5V18H13M8,13H9.5V18H8" />
+          </svg>
+          <span className="text-sm font-medium text-gray-700">Word Document</span>
+          {mediaAlt && (
+            <span className="text-xs text-gray-500 mt-1 text-center">{mediaAlt}</span>
+          )}
+          
+          {showDownloadLink && (
+            <a
+              href={mediaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+            >
+              <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              Download Word
+            </a>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return null
 }
 
@@ -96,8 +133,11 @@ export function useMediaInfo(media?: MediaField[]) {
   return {
     url: getMediaUrl(media),
     type: getMediaType(media),
+    fileType: getFileType(media),
     alt: getMediaAlt(media),
     isImage: isImage(media),
     isPDF: isPDF(media),
+    isWord: isWord(media),
+    isFile: isFile(media),
   }
 }

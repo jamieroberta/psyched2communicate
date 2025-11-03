@@ -128,8 +128,8 @@ export default defineType({
       description: 'Pin this announcement to the top of the list',
       initialValue: false,
     }),
-    simpleMediaField('media', 'Featured Image or PDF', {
-      description: 'Upload a featured image or PDF document for this announcement',
+    simpleMediaField('media', 'Featured Image or Document', {
+      description: 'Upload a featured image, PDF document, or Word document for this announcement',
       hotspot: true,
     }),
   ],
